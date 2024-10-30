@@ -1,0 +1,17 @@
+RewriteBase /					|
+RewriteEngine On				|estas líneas sirven para ocultar la extención  
+RewriteCond %{REQUEST_FILENAME} !-d		|de los archivos, en este caso .html
+RewriteCond %{REQUEST_FILENAME}.html -f		|
+RewriteRule ^(.*)$ $1.html			|
+
+RewriteCond %{REQUEST_FILENAME} !-d		|
+RewriteCond %{REQUEST_FILENAME}.php -f		|en este caso .php
+RewriteRule ^(.*)$ $1.php			|
+
+DirectoryIndex inicio.php			| aquí se define archivo por default para cargar
+DirectoryIndex index.php
+
+<Files ".env">					|
+    Order allow,deny				| No permite el acceso a los arcivos .env por la url		
+    Deny from all				|
+</Files>
