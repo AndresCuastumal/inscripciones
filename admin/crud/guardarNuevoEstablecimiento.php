@@ -12,26 +12,36 @@ if($_SESSION){
         //$id_propietario =   $_POST['idP'];       
         if(isset($_POST['idP'])) $id_propietario = $_POST['idP'];//Este condicional se da porque viene de dos modales diferentes
         else $id_propietario = $_POST['id_propietario2'];
-        
+        if(isset($_POST['id_sujeto'])) $id_sujeto = $_POST['id_sujeto'];//Este condicional se da porque viene de dos modales diferentes
+        else $id_sujeto = $_POST['id_sujeto2'];
         if(isset($_POST['id_clase'])) $id_clase = $_POST['id_clase'];//Este condicional se da porque viene de dos modales diferentes
         else $id_clase = $_POST['id_clase2'];
+        $id_comuna =                $_POST['id_comuna'];
         $sucursal =                 $_POST['sucursal'];
         $dir_establecimiento =      $_POST['dir_establecimiento'];
         $correo_establecimiento =   $_POST['correo_establecimiento'];
         $tel_establecimiento =      $_POST['tel_establecimiento'];    
         $nuevo =                    isset($_POST['nuevo']) ? 1 : 0;
         $fecha_registro =           date('Y-m-d H:i:s');
-        echo $id_propietario; echo $idUsuario; echo $nom_comercial; echo $razon_social;
+
+        $sql_consultar = $conn2->prepare("SELECT COUNT(*) AS total_registros
+                                        FROM establecimiento
+                                        WHERE YEAR(fecha_registro) = YEAR(CURRENT_DATE);");
+        $sql_consultar->execute();
+        $registro = $sql_consultar->fetch(PDO::FETCH_ASSOC);        
+        $no_inscripcion = "52001".date('Y').$registro['total_registros']+1;
+        
         try {
             // Insertar en la base de datos con PDO
-            $sql_guardar = $conn2->prepare("INSERT INTO establecimiento (id_propietario, id_barrio_vereda, id_clase, nit, digito_verificacion, razon_social, nom_comercial, 
-                sucursal, fecha_registro, dir_establecimiento, correo_establecimiento, tel_establecimiento, nuevo, id_usr_registro) 
-            VALUES (:id_propietario, :id_barrio_vereda, :id_clase, :nit, :dv, :razon_social, :nom_comercial, 
-                :sucursal, :fecha_registro, :dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :nuevo, :id_usr_registro)");
+            $sql_guardar = $conn2->prepare("INSERT INTO establecimiento (id_propietario, id_barrio_vereda, id_clase, no_inscripcion, nit, digito_verificacion, razon_social, nom_comercial, 
+                sucursal, fecha_registro, dir_establecimiento, correo_establecimiento, tel_establecimiento, nuevo, id_usr_registro, id_comuna, id_sujeto) 
+            VALUES (:id_propietario, :id_barrio_vereda, :id_clase, :no_inscripcion,:nit, :dv, :razon_social, :nom_comercial, 
+                :sucursal, :fecha_registro, :dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :nuevo, :id_usr_registro, :id_comuna, :id_sujeto)");
 
             $sql_guardar->bindValue(':id_propietario', $id_propietario);
             $sql_guardar->bindValue(':id_barrio_vereda', $id_barrio_vereda);
             $sql_guardar->bindValue(':id_clase', $id_clase);
+            $sql_guardar->bindValue(':no_inscripcion', $no_inscripcion);
             $sql_guardar->bindValue(':nom_comercial', $nom_comercial);
             $sql_guardar->bindValue(':razon_social', $razon_social);
             $sql_guardar->bindValue(':nit', $nit);
@@ -43,11 +53,16 @@ if($_SESSION){
             $sql_guardar->bindValue(':tel_establecimiento', $tel_establecimiento);
             $sql_guardar->bindValue(':nuevo', $nuevo);
             $sql_guardar->bindValue(':id_usr_registro', $idUsuario);
+            $sql_guardar->bindValue(':id_comuna', $id_comuna);
+            $sql_guardar->bindValue(':id_sujeto', $id_sujeto);
             
 
             if ($sql_guardar->execute()) {
                 $last_id = $conn2->lastInsertId(); // Obtiene el ID del último registro insertado
                 echo json_encode(['success' => true, 'id' => $last_id]);
+                header('Content-Type: text/html');
+                echo "<script>alert('Se realizó el registro exitosamente'); window.location.href='../index.php';</script>";
+                exit();
             } else {
                 echo json_encode(['success' => false, 'message' => 'Error al guardar en la base de datos.']);
             }

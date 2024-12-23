@@ -19,7 +19,20 @@
                 $_SESSION['cargo']=$registro['cargo'];
                 $_SESSION['jefe']=$registro['jefe'];
                 $_SESSION['subdependencia']=$registro['subdependencia'];
-                header("Location: admin/index.php");
+                $sentenciaSQLrol=$conn->prepare("SELECT id_rol FROM rolxusuario WHERE id_usuario=:id_usuario");            
+                $sentenciaSQLrol->bindParam(':id_usuario',$registro['id']);            
+                $sentenciaSQLrol->execute();
+                if($registroRol=$sentenciaSQLrol->fetch(PDO::FETCH_ASSOC)){ 
+                    $_SESSION['id_rol'] = $registroRol['id_rol'];
+                    header("Location: admin/index.php");
+                }
+                else{?>
+                    <div class="alert alert-danger" role="alert">
+                        <strong>No existe ningún rol asignado, comuniquese con el administrador del sistema</strong> 
+                    </div>
+                <?php
+
+                }
                 }
             else{ ?>
                 <div class="alert alert-danger" role="alert">

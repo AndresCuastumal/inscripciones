@@ -13,11 +13,11 @@ if($_SESSION){
 
             //+++ ESTE SQL CONSULTA EN BD FUID -> TABLAS: BARRIO, COMUNA, CLASE Y EN BD SERVICIOSIVC -> TABLAS: ESTABLECIMIENTO Y PROPIETARIO +++
                 
-            $sql = "SELECT e.id, e.nom_comercial, e.nit, e.digito_verificacion, e.dir_establecimiento, 
+            $sql = "SELECT e.id, e.nom_comercial, e.nit, e.digito_verificacion, e.dir_establecimiento, e.tel_establecimiento, 
                         b.nom_barrio, 
-                        c.nom_comuna, 
+                        c.nom_comuna, c.id as id_comuna, 
                         p.nom_propietario, p.ape_propietario, p.doc,
-                        cl.nom_clase,
+                        cl.nom_clase, cl.id_sujeto,
                         s.observacion
                     FROM serviciosivc.establecimiento e
                     join bdfuid.barrio b on e.id_barrio_vereda = b.id 

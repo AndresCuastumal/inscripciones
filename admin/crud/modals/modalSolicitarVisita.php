@@ -43,8 +43,17 @@
                                     <label for="nom_comuna" class="form-label text-primary">Comuna/Corregimiento:</label>
                                     <div class="w-30">
                                         <input type="text" name="nom_comuna" id="nom_comuna" class ="form-control-plaintext" readonly>
+                                        <input type="hidden" id="id_comuna" name="id_comuna">
                                     </div>
                                 </td>                                                    
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <label for="tel_establecimiento" class="form-label text-primary">Número Telefónico:</label>
+                                    <div class="w-30">
+                                        <input type="text" name="tel_establecimiento" id="tel_establecimiento" class ="form-control-plaintext" readonly>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>
@@ -62,7 +71,8 @@
                                 <td class="w-50">
                                     <label for="nom_clase" class="form-label text-primary">Sujeto:</label>
                                     <div class="w-30">
-                                        <input type="text" name="nom_clase" id="nom_clase" class ="form-control-plaintext" readonly>
+                                        <input type="text" name="nom_clase" id="nom_clase" class ="form-control-plaintext" readonly>                                        
+                                        <input type="hidden" id="id_sujeto" name="id_sujeto">
                                     </div>
                                 </td>
                                 <td></td>                                     
@@ -73,8 +83,9 @@
                                     <div>
                                         <select id="tipo_solicitud" name="tipo_solicitud" class="form-control" required>
                                             <option value= "" disabled selection selected>Seleccione tipo de solicitud</option>
-                                            <option value="Inscripción de establemiciento">Inscripción de establecimiento</option>
-                                            <option value="Concepto sanitario">Concepto sanitario</option>                                                      
+                                            <option value="Visita por primera vez">Visita por primera vez</option>
+                                            <option value="Renovación de concepto sanitario">Renovación de concepto sanitario</option>
+                                            <option value="Para levantamiento de medida sanitaria">Para levantamiento de medida sanitaria</option>                                                      
                                         </select>
                                     </div>
                                 </td>

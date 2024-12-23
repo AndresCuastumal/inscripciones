@@ -72,18 +72,30 @@
                                 </td>
                                 <td colspan="2">
                                     <label for="id_barrio_vereda" class="form-label">Barrio establecimiento:</label>
-                                    <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control" required>
-                                        <?php
-                                        $consultaBarrioVereda = $conn->prepare("SELECT * FROM barrio");
-                                        $consultaBarrioVereda->execute();
-
-                                        ?>
+                                    <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control" required onchange="obtenerDatos()">
                                         <option value="">Seleccione...</option>
                                         <?php
+                                        $consultaBarrioVereda = $conn->prepare("SELECT id, nom_barrio, id_comuna FROM barrio");
+                                        $consultaBarrioVereda->execute();
+
                                         while ($row_registro = $consultaBarrioVereda->fetch(PDO::FETCH_ASSOC)) { ?>
-                                            <option value="<?= $row_registro['id']; ?>"><?= $row_registro['nom_barrio']; ?></option>
+                                            <option value="<?= $row_registro['id']; ?>" data-id-comuna="<?= $row_registro['id_comuna']; ?>">
+                                                <?= $row_registro['nom_barrio']; ?>
+                                            </option>
                                         <?php } ?>
                                     </select>
+                                    <input type="hidden" id="id_comuna" name="id_comuna">
+
+                                    <!-- SCRIPT QUE ASIGNA UN VALOR CONSULTADO EN UNA TABLA PARA ALMACENARLA EN EL HIDDEN -->
+                                    <script>
+                                    document.getElementById("id_barrio_vereda").addEventListener("change", function() {
+                                        console.log("La función obtenerDatos() se está ejecutando.");
+                                        const select = document.getElementById("id_barrio_vereda");
+                                        const id_comuna = select.options[select.selectedIndex].getAttribute("data-id-comuna");
+                                        document.getElementById("id_comuna").value = id_comuna;
+                                        console.log("ID Comuna seleccionado:", id_comuna);
+                                    });
+                                    </script>
                                 </td>
                             </tr>
                             <tr>     
@@ -140,4 +152,5 @@ $(document).ready(function(){
     });
 });
 </script>
+
 

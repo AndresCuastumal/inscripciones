@@ -7,6 +7,7 @@
     $activo = $_SESSION['activo'];
     $idJefe=$_SESSION['jefe'];
     $subdependencia=$_SESSION['subdependencia'];
+    $id_rol= $_SESSION['id_rol'];
     
     $sqlJefe = $conn->prepare("SELECT  d.nom_dependencia,sd.nom_subdependencia, u.nom_usuario
                                 FROM usuario u
@@ -41,23 +42,31 @@
         <nav class="navbar navbar-expand navbar-dark bg-primary">
         <ul class="nav navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Nueva Inscripción</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="index_consulta.php?consulta=fuid">Consulta general</a></li>
-                    <li><a class="dropdown-item" href="index_usuarios.php">Consulta por usuario</a></li>
-                    <li><a class="dropdown-item" href="index_consulta.php?consulta=noexistentes">Consulta no existentes</a></li>
-                </ul>
+                <a class="nav-link" href="index.php" role="button">Inicio</a>                
             </li>                   
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Modificar inscripción</a>
-                <ul class="dropdown-menu">                
-                    <?php if($_SESSION['cargo']==3){  ?>               
-                        <li><a class="dropdown-item" href="crear_usuario.php">Crear usuario</a></li>                        
-                        <li><a class="dropdown-item" href="admin_usuario.php">Administrar usuario</a></li>
-                        <li><a class="dropdown-item" href="updatePuser.php">Restablecer contraseña</a></li>
-                    <?php } ?>                
+                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Registrador</a>
+                <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="index_1.php">Administrar establecimieto</a></li>
+                        <li><a class="dropdown-item" href="index_1b.php">Imprimir solicitud de Reg. sanitario</a></li>
+                        <li><a class="dropdown-item" href="index_1c.php">imprimir formato de Inscripción</a></li>
                 </ul>
             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Técnico visita</a>
+                <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="index_2.php">Revisar solicitudes</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo digitador actas</a>
+                <ul class="dropdown-menu">                
+                    <?php if($_SESSION['cargo']==3){  ?>               
+                        <li><a class="dropdown-item" href="crear_usuario.php">Revisar existencia establecimiento</a></li>                        
+                        <li><a class="dropdown-item" href="admin_usuario.php">Actualizar cargue establecimieto a SSA</a></li>
+                    <?php } ?>                
+                </ul>
+            </li>            
         </li>            
         </ul>
         <ul class="nav navbar-nav">

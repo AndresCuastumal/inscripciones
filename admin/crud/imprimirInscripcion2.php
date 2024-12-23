@@ -3,32 +3,26 @@ session_start();
 if($_SESSION){
     require '../../config/conexion.php';
     header('Content-Type: application/json');
-    $fecha_actual = date('Y-m-d H:i:s');
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $idUsuario =            $_SESSION['id_usuario'];
-        $id =                   $_POST['id'];
-        $nit =                  $_POST['nit']." - ".$_POST['dv'];
-        $nom_comercial =        $_POST['nom_comercial'];
-        $dir_establecimiento =  $_POST['dir_establecimiento'];
-        $nom_barrio =           $_POST['nom_barrio'];
-        $nom_comuna =           $_POST['nom_comuna'];
-        $nom_propietario =      $_POST['nom_propietario_inscr'];
-        $doc_propietario =      $_POST['doc_propietario_inscr'];
-        $nom_solicitante =      $_POST['nom_solicitante'];
-        $nom_clase =            $_POST['nom_clase'];
-        $tipo_solicitud =       $_POST['tipo_solicitud'];
-        $observacion =          $_POST['observacion'];
-
-        // Consultar datos faltantes para imprimir inscripción
-
-        $sql_consultarEstablecimiento= $conn2->prepare("select no_inscripcion, fecha_registro, tel_establecimiento 
-                                                        from establecimiento 
-                                                        where id = :id_establecimiento");
-        $sql_consultarEstablecimiento->bindParam(':id_establecimiento', $id);
-        $sql_consultarEstablecimiento->execute();
-        $registro = $sql_consultarEstablecimiento->fetch(PDO::FETCH_ASSOC);
-        $conn2 = null; // Cerrar la conexión en PDO
-    }
+    $fecha_actual = date('Y-m-d H:i:s');   
+    $idUsuario      = $_SESSION['id_usuario'];
+    $id_establecimiento   = $_GET['id'];         
+    
+    $sentenciaSQL=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, e.dir_establecimiento, e.tel_establecimiento, e.fecha_registro, e.no_inscripcion,
+    s.fecha_solicitud, s.tipo_solicitud, s.nom_solicitante, s.observacion,
+    p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario,
+    c.nom_clase,
+    b.nom_barrio,
+    co.nom_comuna
+    FROM solicitud s 
+    JOIN establecimiento e ON e.id = s.id_establecimiento
+    JOIN propietario p ON e.id_propietario = p.id 
+    JOIN bdfuid.clase c ON e.id_clase = c.id
+    JOIN bdfuid.barrio b ON e.id_barrio_vereda = b.id 
+    JOIN bdfuid.comuna co ON b.id_comuna = co.id                                    
+    WHERE e.id = :id_establecimiento");    
+$sentenciaSQL->bindParam(':id_establecimiento',$id_establecimiento);
+$sentenciaSQL->execute();
+$registro=$sentenciaSQL->fetch(PDO::FETCH_ASSOC);
 }
 else header('Location:../index.php');
 ?>
@@ -65,25 +59,26 @@ else header('Location:../index.php');
             <td colspan="2">Fecha de inscripción: <?= $registro['fecha_registro'];?></td><td colspan="2">Número de inscripción: <?= $registro['no_inscripcion'];?> </td>
         </tr>
         <tr>
-            <td colspan="4">Razón social: <?= $nom_comercial;?> <?= $nit;?></td></td>
+            <td colspan="4">Razón social: <?= $registro['nom_comercial'];?> <?= $registro['nit'];?></td></td>
         </tr>
         <tr>
-            <td colspan="2">Propietario: <?= $nom_propietario;?></td><td colspan="2">No. de identificación: <?= $doc_propietario;?></td>
+            <td colspan="2">Propietario: <?= $registro['nom_propietario'].' '.$registro['ape_propietario'];?></td>
+            <td colspan="2">No. de identificación: <?= $registro['doc'];?></td>
         </tr>
         <tr>
-            <td colspan="2">Dirección: <?= $dir_establecimiento;?></td><td colspan="2">Barrio: <?= $nom_barrio;?> </td>
+            <td colspan="2">Dirección: <?= $registro['dir_establecimiento'];?></td><td colspan="2">Barrio: <?= $registro['nom_barrio'];?> </td>
         </tr>
         <tr>
-            <td colspan="2">Comuna/corregimiento: <?= $nom_comuna;?></td><td colspan="2">No. telefónico: <?= $registro['tel_establecimiento'];?></td>
+            <td colspan="2">Comuna/corregimiento: <?= $registro['nom_comuna'];?></td><td colspan="2">No. telefónico: <?= $registro['tel_establecimiento'];?></td>
         </tr>
         <tr>
-            <td colspan="4">Sujeto: <?= $nom_clase;?></td>
+            <td colspan="4">Sujeto: <?= $registro['nom_clase'];?></td>
         </tr>
         <tr>
-            <td colspan="4"><br>Observaciones:<?= $observacion;?></td>
+            <td colspan="4"><br>Observaciones:</td>
         </tr>
         <tr>
-            <td colspan="4">Solicitado por: <?= $nom_solicitante;?></td>
+            <td colspan="4">Solicitado por: </td>
         </tr>
         <tr>
             
@@ -95,7 +90,7 @@ else header('Location:../index.php');
         <tr>
         <td colspan = "3" style="font-size: 7px; border: none;">
                 Este documento se debe presentar ante las autoridades de inspección, vigilancia y control (Policía, Secretaría de Salud, Oficina de espacio público, etc)
-                <a href="http://localhost/inscripciones/admin/index.php"> >> </a>
+                <a href="http://localhost/inscripciones/admin/index_1c.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">
                 <b>Fecha de impresión: </b><?php echo $fecha_actual; ?>

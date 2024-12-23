@@ -6,7 +6,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i></button>      
             </div>
             <div class="modal-body">
-                <form action ="crud/guardarSolicitudVisita.php" method="post">
+                <form action ="crud/imprimirInscripcion.php" method="post">
                     <input type="hidden" name="id" id="id">                
                     <div class="mb-2">
                         <table class="table table-sm mt-4">                
@@ -68,14 +68,10 @@
                                 <td></td>                                     
                             </tr>
                             <tr>
-                                <td colspan="2">
-                                    <label for="tipo_solicitud" class="form-label text-primary">Tipo solicitud:</label>
-                                    <div>
-                                        <select id="tipo_solicitud" name="tipo_solicitud" class="form-control" required>
-                                            <option value= "" disabled selection selected>Seleccione tipo de solicitud</option>
-                                            <option value="inscripcion">Inscripción de establecimiento</option>
-                                            <option value="concepto">última solicitud de Concepto sanitario</option>                                                      
-                                        </select>
+                                <td class="w-50" colspan= "2">
+                                    <label for="nom_clase" class="form-label text-primary">Tipo solicitud:</label>
+                                    <div class="w-30">
+                                        <input type="text" name="tipo_solicitud" id="tipo_solicitud" value ="Inscripción de establecimiento"class ="form-control-plaintext" readonly>
                                     </div>
                                 </td>
                                 <td rowspan= "2" class="w-50">

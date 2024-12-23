@@ -1,53 +1,88 @@
 <?php
 session_start();
-if($_SESSION){
+ob_start();
+
+if ($_SESSION) {
     require '../../config/conexion.php';
     header('Content-Type: application/json');
     $fecha_actual = date('Y-m-d H:i:s');
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $idUsuario =            $_SESSION['id_usuario'];
-        $id =                   $_POST['id'];
-        $nit =                  $_POST['nit']." - ".$_POST['dv'];
-        $nom_comercial =        $_POST['nom_comercial'];
-        $dir_establecimiento =  $_POST['dir_establecimiento'];
-        $nom_barrio =           $_POST['nom_barrio'];
-        $nom_comuna =           $_POST['nom_comuna'];
-        $nom_propietario =      $_POST['nom_propietario'];
-        $doc_propietario =      $_POST['doc_propietario'];
-        $nom_solicitante =      $_POST['nom_solicitante'];
-        $nom_clase =            $_POST['nom_clase'];
-        $tipo_solicitud =       $_POST['tipo_solicitud'];
-        $observacion =          $_POST['observacion'];
+        $idUsuario =        $_SESSION['id_usuario'];
+        $id =               $_POST['id'];
+        $nit =              $_POST['nit'] . " - " . $_POST['dv'];
+        $nom_comercial =    $_POST['nom_comercial'];
+        $dir_establecimiento = $_POST['dir_establecimiento'];
+        $tel_establecimiento = $_POST['tel_establecimiento'];
+        $nom_barrio =       $_POST['nom_barrio'];
+        $nom_comuna =       $_POST['nom_comuna'];
+        $id_comuna =        $_POST['id_comuna'];
+        $nom_propietario =  $_POST['nom_propietario'];
+        $doc_propietario =  $_POST['doc_propietario'];
+        $nom_solicitante =  $_POST['nom_solicitante'];
+        $nom_clase =        $_POST['nom_clase'];
+        $id_sujeto =        $_POST['id_sujeto'];
+        $tipo_solicitud =   $_POST['tipo_solicitud'];
+        $observacion =      $_POST['observacion'];
 
-        // Consultar si existe ya una solicitud previa para ese establecimieto 
+        // Verificar qué técnico se asigna para la solicitud
+        $sql_consultarTecnico = $conn->prepare("SELECT c.id_usuario 
+                                                FROM bdfuid.comunaxusuario AS c
+                                                JOIN bdfuid.sujetoxusuario AS s ON c.id_usuario = s.id_usuario
+                                                WHERE c.id_comuna = :id_comuna AND s.id_sujeto = :id_sujeto;");
+        $sql_consultarTecnico->bindParam(':id_comuna', $id_comuna);
+        $sql_consultarTecnico->bindParam(':id_sujeto', $id_sujeto);
+        $sql_consultarTecnico->execute();
+        $registroTecnico = $sql_consultarTecnico->fetch(PDO::FETCH_ASSOC);
+        if ($registroTecnico && isset($registroTecnico['id_usuario'])) {
+            // Si el registro existe y tiene 'id_usuario', verifica si es vacío y asigna "0" si es necesario
+            if (!$registroTecnico['id_usuario']) {
+                $registroTecnico['id_usuario'] = "0";
+            }
+        } else {
+            // Si no hay registro, asigna un valor por defecto
+            $registroTecnico = ['id_usuario' => "0"];
+        }
+        
+        
+        // Verificar si ya existe una solicitud para el establecimiento
+        //$sql_consultarEstablecimiento = $conn2->prepare("SELECT id, fecha_solicitud FROM solicitud WHERE id_establecimiento = :id_establecimiento");
+        //$sql_consultarEstablecimiento->bindParam(':id_establecimiento', $id);
+        //$sql_consultarEstablecimiento->execute();
+        //$registro = $sql_consultarEstablecimiento->fetch(PDO::FETCH_ASSOC);
 
-        $sql_consultarEstablecimiento= $conn2->prepare("select id, fecha_solicitud from solicitud where id_establecimiento = :id_establecimiento");
-        $sql_consultarEstablecimiento->bindParam(':id_establecimiento', $id);
-        $sql_consultarEstablecimiento->execute();
-        $registro = $sql_consultarEstablecimiento->fetch(PDO::FETCH_ASSOC);
-        if($registro) $fecha_solicitud = $registro['fecha_solicitud'];
-        else{
+        //if ($registro) {
+            // Si ya existe, enviar respuesta JSON
+            //echo json_encode(['exists' => true, 'fecha_solicitud' => $registro['fecha_solicitud']]);
+            
+        //} else {
             try {
-                // Insertar en la tabla Solicitud los datos de la solicitud de visita de concepto sanitario
-                $sql_guardar = $conn2->prepare("INSERT INTO solicitud(id_establecimiento, id_usuario_registra, id_usuario_actualiza, fecha_solicitud, tipo_solicitud, nom_solicitante, observacion) 
-                VALUES (:id_establecimiento, :id_usuario ,:id_usuario, :fecha_solicitud, :tipo_solicitud, :nom_solicitante, :observacion)");
-                
+                // Insertar nueva solicitud
+                $sql_guardar = $conn2->prepare("INSERT INTO solicitud(id_establecimiento, id_usuario_registra, id_usuario_actualiza, fecha_solicitud, tipo_solicitud, nom_solicitante, observacion, visitado,  id_usr_tecnico) 
+                VALUES (:id_establecimiento, :id_usuario, :id_usuario, :fecha_solicitud, :tipo_solicitud, :nom_solicitante, :observacion,'No visitado', :id_usr_tecnico)");
+
                 $sql_guardar->bindValue(':id_establecimiento', $id);
                 $sql_guardar->bindValue(':id_usuario', $idUsuario);
                 $sql_guardar->bindValue(':fecha_solicitud', $fecha_actual);
                 $sql_guardar->bindValue(':tipo_solicitud', $tipo_solicitud);
                 $sql_guardar->bindValue(':nom_solicitante', $nom_solicitante);
                 $sql_guardar->bindValue(':observacion', $observacion);
+                $sql_guardar->bindValue(':id_usr_tecnico', $registroTecnico['id_usuario'], PDO::PARAM_INT);
+
                 $sql_guardar->execute();
-                $fecha_solicitud=$fecha_actual;
+
+                $fecha_solicitud = $fecha_actual;
             } catch (PDOException $e) {
                 echo json_encode(['success' => false, 'message' => 'Error de conexión: ' . $e->getMessage()]);
+                exit();
             }
-        }
-        $conn2 = null; // Cerrar la conexión en PDO
+        //}
+        $conn2 = null; // Cerrar la conexión
     }
+} else {
+    header('Location:../index.php');
+    exit();
 }
-else header('Location:../index.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,7 +129,7 @@ else header('Location:../index.php');
             <td colspan="2">Dirección: <?= $dir_establecimiento;?></td><td colspan="2">Barrio: <?= $nom_barrio;?> </td>
         </tr>
         <tr>
-            <td colspan="2">Comuna/corregimiento: <?= $nom_comuna;?></td><td colspan="2">No. telefónico: </td>
+            <td colspan="2">Comuna/corregimiento: <?= $nom_comuna;?></td><td colspan="2">No. telefónico: <?= $tel_establecimiento;?></td>
         </tr>
         <tr>
             <td colspan="4">Solicitado por: <?= $nom_solicitante;?></td>
@@ -148,3 +183,6 @@ else header('Location:../index.php');
     $dompdf->stream('archivo_.pdf',array('Attachment'=>false));
     
 ?>
+
+
+
