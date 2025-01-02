@@ -12,7 +12,7 @@ if(isset($_POST['id_sujeto'])) {
 
     // Verificar si hay algo que se imprime antes
     ob_start(); // Comienza a capturar cualquier salida
-    $consultaClase = $conn->prepare("SELECT * FROM clase WHERE id_sujeto = :id_sujeto");
+    $consultaClase = $conn->prepare("SELECT * FROM clase WHERE id_sujeto = :id_sujeto order by nom_clase");
     $consultaClase->bindParam(':id_sujeto', $id_sujeto, PDO::PARAM_INT);
     $consultaClase->execute();
 

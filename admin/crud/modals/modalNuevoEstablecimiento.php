@@ -24,7 +24,7 @@
                                     <label for="id_sujeto" class="form-label">Seleccione Sujeto:</label>
                                     <select name="id_sujeto" id="id_sujeto" class="form-control" required>
                                         <?php
-                                        $consultaSujeto = $conn->prepare("SELECT * FROM sujeto");
+                                        $consultaSujeto = $conn->prepare("SELECT * FROM sujeto order by nom_sujeto");
                                         $consultaSujeto->execute();
 
                                         ?>
@@ -75,7 +75,7 @@
                                     <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control" required onchange="obtenerDatos()">
                                         <option value="">Seleccione...</option>
                                         <?php
-                                        $consultaBarrioVereda = $conn->prepare("SELECT id, nom_barrio, id_comuna FROM barrio");
+                                        $consultaBarrioVereda = $conn->prepare("SELECT id, nom_barrio, id_comuna FROM barrio order by nom_barrio");
                                         $consultaBarrioVereda->execute();
 
                                         while ($row_registro = $consultaBarrioVereda->fetch(PDO::FETCH_ASSOC)) { ?>

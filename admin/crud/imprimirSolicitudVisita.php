@@ -88,7 +88,7 @@ else header('Location:../index.php');
         <tr>
         <td colspan = "3" style="font-size: 7px; border: none;">
                 
-                <a href="http://localhost:8011/inscripciones/admin/index_1b.php"> >> </a>
+                <a href="http://saludpasto.gov.co:8011/inscripciones/admin/index_1b.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">
                 <b>Fecha de impresión: </b><?php echo $fecha_actual; ?>
