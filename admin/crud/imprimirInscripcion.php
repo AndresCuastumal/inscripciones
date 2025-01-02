@@ -46,7 +46,7 @@ else header('Location:../index.php');
     <table class="table table-sm mt-1 table-bordered" style="font-size: 10px; line-height: 0.5; width: 100%; table-layout: fixed;">
         <tr>
             <td rowspan="3" style="width: 15%; white-space: nowrap; line-height: 1; text-align: center; vertical-align: middle;">
-                <img src="http://localhost/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
+                <img src="http://localhost:8011/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
             </td>
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">PROCESO SALUD PÚBLICA</td>
         </tr>
@@ -93,8 +93,7 @@ else header('Location:../index.php');
         
         
         <tr>
-        <td colspan = "3" style="font-size: 7px; border: none;">
-                Este documento se debe presentar ante las autoridades de inspección, vigilancia y control (Policía, Secretaría de Salud, Oficina de espacio público, etc)
+        <td colspan = "3" style="font-size: 7px; border: none;">                
                 <a href="http://localhost/inscripciones/admin/index.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">
