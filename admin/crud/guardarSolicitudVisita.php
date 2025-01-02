@@ -44,6 +44,12 @@ if ($_SESSION) {
             $registroTecnico = ['id_usuario' => "0"];
         }
         
+        $sql_consultar = $conn2->prepare("SELECT COUNT(*) AS total_registros
+                                        FROM solicitud
+                                        WHERE YEAR(fecha_solicitud) = YEAR(CURRENT_DATE);");
+        $sql_consultar->execute();
+        $registro = $sql_consultar->fetch(PDO::FETCH_ASSOC);        
+        $no_solicitud = date('Y').$registro['total_registros']+1;
         
         // Verificar si ya existe una solicitud para el establecimiento
         //$sql_consultarEstablecimiento = $conn2->prepare("SELECT id, fecha_solicitud FROM solicitud WHERE id_establecimiento = :id_establecimiento");
@@ -58,11 +64,12 @@ if ($_SESSION) {
         //} else {
             try {
                 // Insertar nueva solicitud
-                $sql_guardar = $conn2->prepare("INSERT INTO solicitud(id_establecimiento, id_usuario_registra, id_usuario_actualiza, fecha_solicitud, tipo_solicitud, nom_solicitante, observacion, visitado,  id_usr_tecnico) 
-                VALUES (:id_establecimiento, :id_usuario, :id_usuario, :fecha_solicitud, :tipo_solicitud, :nom_solicitante, :observacion,'No visitado', :id_usr_tecnico)");
+                $sql_guardar = $conn2->prepare("INSERT INTO solicitud(id_establecimiento, id_usuario_registra, id_usuario_actualiza, no_solicitud, fecha_solicitud, tipo_solicitud, nom_solicitante, observacion, visitado,  id_usr_tecnico) 
+                VALUES (:id_establecimiento, :id_usuario, :id_usuario, :no_solicitud, :fecha_solicitud, :tipo_solicitud, :nom_solicitante, :observacion,'No visitado', :id_usr_tecnico)");
 
                 $sql_guardar->bindValue(':id_establecimiento', $id);
                 $sql_guardar->bindValue(':id_usuario', $idUsuario);
+                $sql_guardar->bindValue(':no_solicitud', $no_solicitud);
                 $sql_guardar->bindValue(':fecha_solicitud', $fecha_actual);
                 $sql_guardar->bindValue(':tipo_solicitud', $tipo_solicitud);
                 $sql_guardar->bindValue(':nom_solicitante', $nom_solicitante);
@@ -98,7 +105,7 @@ if ($_SESSION) {
     <table class="table table-sm mt-1 table-bordered" style="font-size: 10px; line-height: 0.5; width: 100%; table-layout: fixed;">
         <tr>
             <td rowspan="3" style="width: 15%; white-space: nowrap; line-height: 1; text-align: center; vertical-align: middle;">
-                <img src="http://localhost/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
+                <img src="http://localhost:8011/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
             </td>
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">PROCESO SALUD PÚBLICA</td>
         </tr>
@@ -106,15 +113,15 @@ if ($_SESSION) {
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">SOLICITUD DE SERVICIOS SALUD AMBIENTAL</td>
         </tr>
         <tr>
-            <td style="white-space: nowrap; line-height: 1.2;">VIGENCIA<br>24 jul 2015</td>
-            <td style="white-space: nowrap; line-height: 1.2;">VERSIÓN<br>02</td>
-            <td style="white-space: nowrap; line-height: 1.2;">CODIGO<br>GD-F-007</td>
+            <td style="white-space: nowrap; line-height: 1.2;">VIGENCIA<br>DD-MM-AAA</td>
+            <td style="white-space: nowrap; line-height: 1.2;">VERSIÓN<br>01</td>
+            <td style="white-space: nowrap; line-height: 1.2;">CODIGO<br>SP-F-XXX</td>
             <td style="white-space: nowrap; line-height: 1.2;">PÁGINA<br>1 de 1</td>
         </tr>
     </table>
     <table class="table table-sm mt-1 table-bordered" style="font-size: 12px; line-height: 1; width: 100%; table-layout: fixed;">
         <tr>
-            <td colspan="2">Número de solicitud: </td><td colspan="2">Fecha de solicitud: <?= $fecha_solicitud;?></td>
+            <td colspan="2">Número de solicitud: <?= $no_solicitud;?></td><td colspan="2">Fecha de solicitud: <?= $fecha_solicitud;?></td>
         </tr>
         <tr>
             <td colspan="2">Sujeto: <?= $nom_clase;?></td><td colspan="2">Tipo solicitud: <?= $tipo_solicitud;?></td>
@@ -143,8 +150,7 @@ if ($_SESSION) {
             <td colspan="4"><br>Observación:<?= $observacion;?></td>
         </tr>
         <tr>
-        <td colspan = "3" style="font-size: 7px; border: none;">
-                Este documento se debe presentar ante las autoridades de inspección, vigilancia y control (Policía, Secretaría de Salud, Oficina de espacio público, etc)
+        <td colspan = "3" style="font-size: 7px; border: none;">                
                 <a href="http://localhost/inscripciones/admin/index.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">

@@ -8,7 +8,7 @@ if($_SESSION){
     $id_solicitud   = $_GET['id'];         
     
     $sentenciaSQL=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, e.dir_establecimiento, e.tel_establecimiento,
-    s.fecha_solicitud, s.tipo_solicitud, s.nom_solicitante, s.observacion,
+    s.no_solicitud, s.fecha_solicitud, s.tipo_solicitud, s.nom_solicitante, s.observacion,
     p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario,
     c.nom_clase,
     b.nom_barrio,
@@ -40,7 +40,7 @@ else header('Location:../index.php');
     <table class="table table-sm mt-1 table-bordered" style="font-size: 10px; line-height: 0.5; width: 100%; table-layout: fixed;">
         <tr>
             <td rowspan="3" style="width: 15%; white-space: nowrap; line-height: 1; text-align: center; vertical-align: middle;">
-                <img src="http://localhost/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
+                <img src="http://localhost:8011/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
             </td>
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">PROCESO SALUD PÚBLICA</td>
         </tr>
@@ -48,15 +48,15 @@ else header('Location:../index.php');
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">SOLICITUD DE SERVICIOS SALUD AMBIENTAL</td>
         </tr>
         <tr>
-            <td style="white-space: nowrap; line-height: 1.2;">VIGENCIA<br>24 jul 2015</td>
-            <td style="white-space: nowrap; line-height: 1.2;">VERSIÓN<br>02</td>
-            <td style="white-space: nowrap; line-height: 1.2;">CODIGO<br>GD-F-007</td>
+            <td style="white-space: nowrap; line-height: 1.2;">VIGENCIA<br>DD-MM-AAAA</td>
+            <td style="white-space: nowrap; line-height: 1.2;">VERSIÓN<br>01</td>
+            <td style="white-space: nowrap; line-height: 1.2;">CODIGO<br>SP-F-XXX</td>
             <td style="white-space: nowrap; line-height: 1.2;">PÁGINA<br>1 de 1</td>
         </tr>
     </table>
     <table class="table table-sm mt-1 table-bordered" style="font-size: 12px; line-height: 1; width: 100%; table-layout: fixed;">
         <tr>
-            <td colspan="2">Número de solicitud: </td><td colspan="2">Fecha de solicitud: <?= $registro['fecha_solicitud'];?></td>
+            <td colspan="2">Número de solicitud: <?= $registro['no_solicitud'];?> </td><td colspan="2">Fecha de solicitud: <?= $registro['fecha_solicitud'];?></td>
         </tr>
         <tr>
             <td colspan="2">Sujeto: <?= $registro['nom_clase'];?></td><td colspan="2">Tipo solicitud: <?= $registro['tipo_solicitud'];?></td>
@@ -87,7 +87,7 @@ else header('Location:../index.php');
         </tr>
         <tr>
         <td colspan = "3" style="font-size: 7px; border: none;">
-                Este documento se debe presentar ante las autoridades de inspección, vigilancia y control (Policía, Secretaría de Salud, Oficina de espacio público, etc)
+                
                 <a href="http://localhost/inscripciones/admin/index_1b.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">
