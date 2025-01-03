@@ -27,7 +27,7 @@ $registro=$sentenciaSQL->fetch(PDO::FETCH_ASSOC);
 else header('Location:../index.php');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <link rel="icon" href="../img/favicon.ico">
     <meta charset="UTF-8">
@@ -40,7 +40,7 @@ else header('Location:../index.php');
     <table class="table table-sm mt-1 table-bordered" style="font-size: 10px; line-height: 0.5; width: 100%; table-layout: fixed;">
         <tr>
             <td rowspan="3" style="width: 15%; white-space: nowrap; line-height: 1; text-align: center; vertical-align: middle;">
-                <img src="http://localhost:8011/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
+                <img src="http://saludpasto.gov.co:8011/inscripciones/admin/img/logoAlcaldia.jpg" width="80px" height="80px">
             </td>
             <td colspan="4" class="text-center" style="white-space: nowrap; line-height: 2;">PROCESO SALUD PÚBLICA</td>
         </tr>
@@ -125,5 +125,5 @@ else header('Location:../index.php');
     //$dompdf->setPaper('Legal','landscape'); //para imprimir horizontal
     $dompdf->render();
     $dompdf->stream('archivo_.pdf',array('Attachment'=>false));
-    
+    ob_end_clean();
 ?>

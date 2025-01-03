@@ -44,7 +44,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="index.php" role="button">Inicio</a>                
             </li>
-            <?php if($id_rol=='1'){ ?>                   
+            <?php if($id_rol=='1' or $id_rol=='4' or $id_rol=='5' or $id_rol=='7'){ ?>                   
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Registrador</a>
                 <ul class="dropdown-menu">
@@ -54,7 +54,7 @@
                 </ul>
             </li>
             <?php } ?>
-            <?php if($id_rol=='2'){ ?>
+            <?php if($id_rol=='2' or $id_rol=='4' or $id_rol=='6' or $id_rol=='7'){ ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Técnico visita</a>
                 <ul class="dropdown-menu">
@@ -62,7 +62,7 @@
                 </ul>
             </li>
             <?php } ?>
-            <?php if($id_rol=='3'){ ?>
+            <?php if($id_rol=='3' or $id_rol=='5' or $id_rol=='6' or $id_rol=='7'){ ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo digitador actas</a>
                 <ul class="dropdown-menu">
