@@ -151,7 +151,7 @@ if ($_SESSION) {
         </tr>
         <tr>
         <td colspan = "3" style="font-size: 7px; border: none;">                
-                <a href="http://saludpasto.gov.co:8011/inscripciones/admin/index.php"> >> </a>
+                <a href="http://appsalud.pasto.gov.co:8011/inscripciones/admin/index_1.php"> >> </a>
             </td>
             <td style="text-align: right; font-size: 6px; border: none;">
                 <b>Fecha de impresión: </b><?php echo $fecha_actual; ?>
