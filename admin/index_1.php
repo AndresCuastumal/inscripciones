@@ -70,8 +70,8 @@ switch($accion){
             <tr>
               <th class="text-primary">Nombre establecimiento</th> <th class="text-primary">NIT establecimiento</th> <th class="text-primary">Fecha de Inscripción</th>
               <th class="text-primary">Nombre Propietario</th> <th class="text-primary">Doc Propietario</th>              
-              <th class="border-end text-primary">Editar inscripción</th>
-              <th class="text-primary"> editar establecimiento</th> <th class="text-primary"> Solicitar visita</th> <th class="text-primary">Nuevo</th>
+              <th class="border-end text-primary">Editar propietario</th>
+              <th class="text-primary"> Editar establecimiento</th> <th class="text-primary"> Solicitar visita</th> <th class="text-primary">Nuevo</th>
             </tr>
           </thead>
           <tbody>
@@ -84,8 +84,8 @@ switch($accion){
               
               <td class ="border-end">
                 <?php if(isset($registro['nom_comercial'])){ ?>
-                <a href="#" class="btn btn-sm btn-secondary " data-bs-toggle="modal" data-bs-target="#imprimirInscripcion" data-bs-id="<?= $registro['id']; ?>">
-                <i class="fa-solid fa-print"></i></a>
+                <a href="#" class="btn btn-sm btn-primary " data-bs-toggle="modal" data-bs-target="#editPropietario" data-bs-id="<?= $registro['id_propietario']; ?>">
+                <i class="fa-solid fa-pen-to-square"></i></a>
                 <?php } ?>
               </td>
               <td>
@@ -110,7 +110,7 @@ switch($accion){
             </tr>            
             <?php } ?>
             <tr>
-            <td class="bg-primary text-white" colspan="9"><br>
+            <td class="bg-primary text-white" colspan="8"><br>
               <p>¿No se encuentra el establecimiento y representante legal consultado? Realice una nueva inscripción:</p>
             </td>
             <td td class="bg-primary text-white">
@@ -136,6 +136,7 @@ switch($accion){
   </div>
   <?php include "crud/modals/modalImprimirInscripcion.php";  ?>
   <?php include "crud/modals/modalEditar.php";  ?>
+  <?php include "crud/modals/modalEditPropietario.php";  ?>
   <?php include "crud/modals/modalSolicitarVisita.php";  ?>
   <?php include "crud/modals/modalNuevoPropietario.php";  ?> 
   <?php include "crud/modals/modalNuevoEstablecimiento2.php";  ?> 
@@ -194,6 +195,43 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
     });
 </script>
 
+<!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegPropietario.php -->
+
+<script>
+let editPropietario = document.getElementById('editPropietario');
+editPropietario.addEventListener('shown.bs.modal', event => {
+        let button = event.relatedTarget;
+        let id = button.getAttribute('data-bs-id');
+        let inputId = editPropietario.querySelector('.modal-body #id_edit_propietario');
+        let inputNomPropietario = editPropietario.querySelector('.modal-body #edit_nom_propietario')
+        let inputApePropietario = editPropietario.querySelector('.modal-body #edit_ape_propietario')
+        let inputTdPropietario = editPropietario.querySelector('.modal-body #edit_td_propietario')
+        let inputDocPropietario = editPropietario.querySelector('.modal-body #edit_doc_propietario')
+        let inputTelPropietario = editPropietario.querySelector('.modal-body #edit_tel_propietario')
+        let inputCorreoPropietario = editPropietario.querySelector('.modal-body #edit_correo_propietario')                
+        let url = "crud/getRegPropietario.php";
+        let formData = new FormData();
+        formData.append('id', id);
+
+        fetch(url, {
+            method: "POST",
+            body: formData
+        }).then(response => response.json())
+        .then(data => {
+            console.log('Datos recibidos:', data);
+            inputId.value = data.id;
+            inputNomPropietario.value = data.nom_propietario;
+            inputApePropietario.value = data.ape_propietario;
+            inputTdPropietario.value = data.tipo_doc;
+            inputDocPropietario.value = data.doc;
+            inputTelPropietario.value = data.tel_propietario;
+            inputCorreoPropietario.value = data.correo_propietario;
+        }).catch(err => {
+            console.error('Error en la solicitud fetch:', err);
+        });
+    });
+</script>
+
 <!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegSolicitudVisita.php PARA SOLICITUD VISITA-->
 
 <script>
@@ -214,7 +252,7 @@ solicitarVisita.addEventListener('shown.bs.modal', event => {
         let inputDocPropietario = solicitarVisita.querySelector('.modal-body #doc_propietario')
         let inputNomSolicitante = solicitarVisita.querySelector('.modal-body #nom_solicitante')
         let inputNomClase = solicitarVisita.querySelector('.modal-body #nom_clase')
-        let inputIdSujeto = solicitarVisita.querySelector('.modal-body #id_sujeto')
+        let inputIdSujeto = solicitarVisita.querySelector('.modal-body #id_sujeto_visita')
         //let inputObservacion = solicitarVisita.querySelector('.modal-body #observacion')
                 
         let url = "crud/getRegSolicitudVisita.php";
@@ -353,7 +391,7 @@ document.getElementById('formPropietario').addEventListener('submit', function(e
             }
             if (accion === "guardar") {
                 alert('Datos del representante legal guardados correctamente.');
-                window.location.href = 'index.php'; // Redirige a index.php
+                window.location.href = 'index_1.php'; // Redirige a index.php
             } else if (accion === "continuar") {
               // Aquí se obtiene el id y el nombre del nuevo propietario
               const nuevoId = data.id;

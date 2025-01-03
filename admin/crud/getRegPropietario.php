@@ -3,7 +3,7 @@ require '../../config/conexion.php';
 if (isset($_POST['id'])) {
     try {
         $id = $_POST['id'];
-        $sql = "SELECT p.nom_propietario, p.ape_propietario 
+        $sql = "SELECT p.* 
                 FROM propietario p 
                 WHERE p.id = :id";
         $stmt = $conn2->prepare($sql);

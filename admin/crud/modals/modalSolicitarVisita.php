@@ -72,7 +72,7 @@
                                     <label for="nom_clase" class="form-label text-primary">Sujeto:</label>
                                     <div class="w-30">
                                         <input type="text" name="nom_clase" id="nom_clase" class ="form-control-plaintext" readonly>                                        
-                                        <input type="hidden" id="id_sujeto" name="id_sujeto">
+                                        <input type="hidden" id="id_sujeto_visita" name="id_sujeto_visita">
                                     </div>
                                 </td>
                                 <td></td>                                     

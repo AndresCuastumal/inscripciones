@@ -62,7 +62,7 @@
                                 </td>
                                 <td>
                                     <label for="sucursal" class="form-label">Sucursal:</label>
-                                    <input type="number" name="sucursal" id="sucursal" class="form-control" value="1" required>
+                                    <input type="number" name="sucursal" id="sucursal" class="form-control" value="0" required>
                                 </td>
                             </tr>                                
                             <tr>

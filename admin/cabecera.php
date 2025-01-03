@@ -43,7 +43,8 @@
         <ul class="nav navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link" href="index.php" role="button">Inicio</a>                
-            </li>                   
+            </li>
+            <?php if($id_rol=='1'){ ?>                   
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Registrador</a>
                 <ul class="dropdown-menu">
@@ -52,21 +53,24 @@
                         <li><a class="dropdown-item" href="index_1c.php">imprimir formato de Inscripción</a></li>
                 </ul>
             </li>
+            <?php } ?>
+            <?php if($id_rol=='2'){ ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo Técnico visita</a>
                 <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="index_2.php">Revisar solicitudes</a></li>
                 </ul>
             </li>
+            <?php } ?>
+            <?php if($id_rol=='3'){ ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown">Módulo digitador actas</a>
-                <ul class="dropdown-menu">                
-                    <?php if($_SESSION['cargo']==3){  ?>               
+                <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="crear_usuario.php">Revisar existencia establecimiento</a></li>                        
                         <li><a class="dropdown-item" href="admin_usuario.php">Actualizar cargue establecimieto a SSA</a></li>
-                    <?php } ?>                
                 </ul>
-            </li>            
+            </li>
+            <?php } ?>                        
         </li>            
         </ul>
         <ul class="nav navbar-nav">

@@ -37,7 +37,7 @@ if($_SESSION){
 
             if ($sql_actualizar->execute()) {                
                 header('Content-Type: text/html');
-                echo "<script>alert('Se realizó el registro exitosamente'); window.location.href='../index.php';</script>";
+                echo "<script>alert('Se realizó la actualización de datos del establecimieto exitosamente'); window.location.href='../index_1.php';</script>";
                 exit(); // Detén la ejecución después del redireccionamiento
             }
             

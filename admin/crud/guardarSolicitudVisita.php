@@ -21,7 +21,7 @@ if ($_SESSION) {
         $doc_propietario =  $_POST['doc_propietario'];
         $nom_solicitante =  $_POST['nom_solicitante'];
         $nom_clase =        $_POST['nom_clase'];
-        $id_sujeto =        $_POST['id_sujeto'];
+        $id_sujeto =        $_POST['id_sujeto_visita'];
         $tipo_solicitud =   $_POST['tipo_solicitud'];
         $observacion =      $_POST['observacion'];
 
