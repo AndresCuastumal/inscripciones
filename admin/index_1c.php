@@ -83,7 +83,7 @@ switch($accion){
             <td><?= $registro['id'];?><td><?= $registro['nom_comercial'];?></td><td><?= $registro['nit']; ?></td><td><?= date('d-m-Y', strtotime($registro['fecha_registro'])); ?></td>
               <td><?= $registro['nom_propietario']." ".$registro['ape_propietario'];?></td><td><?= $registro['doc']; ?></td>
               <td>                
-                <a href="../admin/crud/imprimirInscripcion2.php?id=<?= $registro['id']; ?>" class="btn btn-sm btn-secondary">
+              <a href="#" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#imprimirInscripcion" data-bs-id="<?= $registro['id']; ?>">
                 <i class="fa-solid fa-print"></i></a>                
               </td>             
             </tr>            
@@ -92,6 +92,56 @@ switch($accion){
         </table>      
       <?php }}   ?>    
   </div>
+  <?php include "crud/modals/modalImprimirInscripcion.php";  ?>
+
+<!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegSolicitudVisita.php PARA IMPRIMIR INSCRIPCION -->
+
+<script>
+let imprimirInscripcion = document.getElementById('imprimirInscripcion');
+imprimirInscripcion.addEventListener('shown.bs.modal', event => {
+        let button = event.relatedTarget;
+        let id = button.getAttribute('data-bs-id');
+        let inputId = imprimirInscripcion.querySelector('.modal-body #id');
+        let inputNomComercial = imprimirInscripcion.querySelector('.modal-body #nom_comercial')
+        let inputNit = imprimirInscripcion.querySelector('.modal-body #nit')
+        let inputDv = imprimirInscripcion.querySelector('.modal-body #dv')
+        let inputDirEstablecimiento = imprimirInscripcion.querySelector('.modal-body #dir_establecimiento')
+        let inputNomBarrio = imprimirInscripcion.querySelector('.modal-body #nom_barrio')
+        let inputNomComuna = imprimirInscripcion.querySelector('.modal-body #nom_comuna')
+        let inputNomPropietario = imprimirInscripcion.querySelector('.modal-body #nom_propietario_inscr')
+        let inputDocPropietario = imprimirInscripcion.querySelector('.modal-body #doc_propietario_inscr')
+        let inputNomSolicitante = imprimirInscripcion.querySelector('.modal-body #nom_solicitante')
+        let inputNomClase = imprimirInscripcion.querySelector('.modal-body #nom_clase')
+        //let inputObservacion = imprimirInscripcion.querySelector('.modal-body #observacion')
+                
+        let url = "crud/getRegSolicitudVisita.php";
+        let formData = new FormData();
+        formData.append('id', id  );
+
+        fetch(url, {
+            method: "POST",
+            body: formData
+        }).then(response => response.json())
+        .then(data => {
+            console.log('Datos recibidos:', data);
+            inputId.value = data.id;
+            inputNomComercial.value = data.nom_comercial;
+            inputNit.value = data.nit;
+            inputDv.value = data.digito_verificacion;
+            inputDirEstablecimiento.value = data.dir_establecimiento;
+            inputNomBarrio.value = data.nom_barrio;
+            inputNomComuna.value = data.nom_comuna;
+            inputNomPropietario.value = data.nom_propietario+" "+data.ape_propietario;
+            inputDocPropietario.value = data.doc;
+            inputNomSolicitante.value = data.nom_propietario+" "+data.ape_propietario;
+            inputNomClase.value = data.nom_clase; 
+            //inputObservacion.value = data.observacion; 
+
+        }).catch(err => {
+            console.error('Error en la solicitud fetch:', err);
+        });
+    });
+</script>
 
 
 <!-- SCRIPT PARA MOSTRAR UN MENSAJE INFORMATIVO EN EL ÍCONO "i" -->
