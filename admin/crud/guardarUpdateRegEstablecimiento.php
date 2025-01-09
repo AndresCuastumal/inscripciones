@@ -15,11 +15,11 @@ if($_SESSION){
         $dir_establecimiento =  $_POST['dir_establecimiento'];
         $correo_establecimiento=$_POST['correo_establecimiento'];
         $tel_establecimiento =  $_POST['tel_establecimiento'];
-
+        $estado =               (isset($_POST['estado']))?$_POST['estado']:"0";
         try {
             $sql_actualizar = $conn2->prepare("UPDATE establecimiento SET 
                 id_propietario=:id_propietario, id_barrio_vereda=:id_barrio_vereda, razon_social=:razon_social, nom_comercial=:nom_comercial,
-                sucursal=:sucursal, fecha_actualizacion=:fecha_actualizacion, dir_establecimiento=:dir_establecimiento, 
+                sucursal=:sucursal, fecha_actualizacion=:fecha_actualizacion, estado=:estado, dir_establecimiento=:dir_establecimiento, 
                 correo_establecimiento=:correo_establecimiento, tel_establecimiento=:tel_establecimiento, id_usr_update=:id_usr_update
                 WHERE id=:id_establecimiento");
             
@@ -31,6 +31,7 @@ if($_SESSION){
             $sql_actualizar->bindValue(':sucursal', $sucursal);
             $sql_actualizar->bindValue(':fecha_actualizacion', $fecha_actualizacion);
             $sql_actualizar->bindValue(':dir_establecimiento', $dir_establecimiento);
+            $sql_actualizar->bindValue(':estado', $estado);
             $sql_actualizar->bindValue(':correo_establecimiento', $correo_establecimiento);
             $sql_actualizar->bindValue(':tel_establecimiento', $tel_establecimiento);
             $sql_actualizar->bindValue(':id_usr_update', $idUsuario);

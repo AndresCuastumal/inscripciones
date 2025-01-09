@@ -16,7 +16,12 @@ if($_SESSION){
         else $id_sujeto = $_POST['id_sujeto2'];
         if(isset($_POST['id_clase'])) $id_clase = $_POST['id_clase'];//Este condicional se da porque viene de dos modales diferentes
         else $id_clase = $_POST['id_clase2'];
-        $id_comuna =                $_POST['id_comuna'];
+        
+        $sql_consultar_comuna = $conn->prepare("select id_comuna from barrio where id = :id_barrio");
+        $sql_consultar_comuna->bindValue(':id_barrio', $id_barrio_vereda);
+        $sql_consultar_comuna->execute();
+        $id_comuna = $sql_consultar_comuna->fetch(PDO::FETCH_ASSOC);
+
         $sucursal =                 $_POST['sucursal'];
         $dir_establecimiento =      $_POST['dir_establecimiento'];
         $correo_establecimiento =   $_POST['correo_establecimiento'];
@@ -34,9 +39,9 @@ if($_SESSION){
         try {
             // Insertar en la base de datos con PDO
             $sql_guardar = $conn2->prepare("INSERT INTO establecimiento (id_propietario, id_barrio_vereda, id_clase, no_inscripcion, nit, digito_verificacion, razon_social, nom_comercial, 
-                sucursal, fecha_registro, dir_establecimiento, correo_establecimiento, tel_establecimiento, nuevo, id_usr_registro, id_comuna, id_sujeto) 
+                sucursal, fecha_registro, estado, dir_establecimiento, correo_establecimiento, tel_establecimiento, nuevo, id_usr_registro, id_comuna, id_sujeto) 
             VALUES (:id_propietario, :id_barrio_vereda, :id_clase, :no_inscripcion,:nit, :dv, :razon_social, :nom_comercial, 
-                :sucursal, :fecha_registro, :dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :nuevo, :id_usr_registro, :id_comuna, :id_sujeto)");
+                :sucursal, :fecha_registro, '1',:dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :nuevo, :id_usr_registro, :id_comuna, :id_sujeto)");
 
             $sql_guardar->bindValue(':id_propietario', $id_propietario);
             $sql_guardar->bindValue(':id_barrio_vereda', $id_barrio_vereda);
@@ -53,7 +58,7 @@ if($_SESSION){
             $sql_guardar->bindValue(':tel_establecimiento', $tel_establecimiento);
             $sql_guardar->bindValue(':nuevo', $nuevo);
             $sql_guardar->bindValue(':id_usr_registro', $idUsuario);
-            $sql_guardar->bindValue(':id_comuna', $id_comuna);
+            $sql_guardar->bindValue(':id_comuna', $id_comuna['id_comuna']);
             $sql_guardar->bindValue(':id_sujeto', $id_sujeto);
             
 

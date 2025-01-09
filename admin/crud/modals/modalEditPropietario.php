@@ -13,18 +13,18 @@
                         <table class="table">
                         <tr>
                             <td>
-                                <label for="edit_nom_propietario" class="form-label">Nombre(s) representante legal:</label>
+                                <label for="edit_nom_propietario" class="form-label">* Nombre(s) representante legal:</label>
                                 <input type="text" name="edit_nom_propietario" id="edit_nom_propietario" class="form-control" required>
                             </td>
                             <td>
-                                <label for="edit_ape_propietario" class="form-label">Apellido(s) representante legal:</label>
+                                <label for="edit_ape_propietario" class="form-label">* Apellido(s) representante legal:</label>
                                 <input type="text" name="edit_ape_propietario" id="edit_ape_propietario" class="form-control" required>
                             </td>
                             
                         </tr>
                         <tr>
                             <td>
-                                <label for="edit_td_propietario" class="form-label">Tipo de documento:</label>
+                                <label for="edit_td_propietario" class="form-label">* Tipo de documento:</label>
                                 <div>
                                 <select id="edit_td_propietario" name="edit_td_propietario" class="form-control" required>
                                     <option value= "" disabled selection selected>Seleccione tipo de documento</option>
@@ -36,7 +36,7 @@
                                 </div>
                             </td>
                             <td>
-                                <label for="edit_doc_propietario" class="form-label">Número de documento:</label>                                    
+                                <label for="edit_doc_propietario" class="form-label">* Número de documento:</label>                                    
                                 <input type="text" name="edit_doc_propietario" id="edit_doc_propietario" class="form-control" required>                                    
                             </td>
                         </tr>

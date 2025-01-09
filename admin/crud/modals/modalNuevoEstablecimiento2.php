@@ -84,7 +84,7 @@
                                             </option>
                                         <?php } ?>
                                     </select>
-                                    <input type="hidden" id="id_comuna" name="id_comuna2">
+                                    <input type="hidden" id="id_comuna2" name="id_comuna2">
 
                                     <!-- SCRIPT QUE ASIGNA UN VALOR CONSULTADO EN UNA TABLA PARA ALMACENARLA EN EL HIDDEN -->
                                     <script>

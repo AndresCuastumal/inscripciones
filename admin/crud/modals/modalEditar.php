@@ -13,21 +13,21 @@
             <table class="table">                
                 <tr>
                     <td colspan = "2">    
-                        <label for="razon_social" class="form-label">Razon social:</label>
+                        <label for="razon_social" class="form-label">* Razon social:</label>
                         <input type="text" name="razon_social" id="razon_social" class ="form-control">
                     </td>
                     <td colspan = "2">    
-                        <label for="nom_comercial" class="form-label">Nombre comercial:</label>
+                        <label for="nom_comercial" class="form-label">* Nombre comercial:</label>
                         <input type="text" name="nom_comercial" id="nom_comercial" class ="form-control">
                     </td>
                 </tr>
                 <tr>    
                     <td colspan ="2">
-                        <label for="nit" class="form-label">NIT Establecimiento:</label>
+                        <label for="nit" class="form-label">* NIT Establecimiento:</label>
                         <input type="text" name="nit" id="nit" class ="form-control" readonly style="background-color: #e3f1f1;">                    
                     </td>
                     <td>
-                        <label for="dv" class="form-label">DV:</label>
+                        <label for="dv" class="form-label">* DV:</label>
                         <input type="text" name="dv" id="dv" class ="form-control" readonly style="background-color: #e3f1f1;">
                     </td>
                     <td>
@@ -37,11 +37,11 @@
                 </tr>
                 <tr>                    
                     <td colspan="2">
-                        <label for="dir_establecimiento" class="form-label">Dirección:</label>
+                        <label for="dir_establecimiento" class="form-label">* Dirección:</label>
                         <input type="text" name="dir_establecimiento" id="dir_establecimiento" class ="form-control" >
                     </td>
                     <td colspan="2">
-                        <label for="id_barrio_vereda" class="form-label">Barrio establecimiento:</label>                        
+                        <label for="id_barrio_vereda" class="form-label">* Barrio establecimiento:</label>                        
                         <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control">
                             <option value="">Seleccione...</option>
                             <?php
@@ -58,15 +58,21 @@
                         <label for="correo_establecimiento" class="form-label">Correo establecimiento:</label>
                         <input type="mail" name="correo_establecimiento" id="correo_establecimiento" class ="form-control" >
                     </td>
-                    <td colspan="2">
+                    <td>
                         <label for="tel_establecimiento" class="form-label">Teléfono establecimiento:</label>
                         <input type="text" name="tel_establecimiento" id="tel_establecimiento" class ="form-control" >
+                    </td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="estado" name="estado" value="1">
+                            <label class="form-check-label" for="estado">Activo</label>
+                        </div>
                     </td>                                                                                          
                 </tr>
                 <tr>
                     <td colspan="2">
                         <label for="doc_propietario" class="form-label">
-                            Identificación Propietario:
+                            * Identificación Propietario:
                         <span 
                             class="ms-2" 
                             data-bs-toggle="tooltip" 
@@ -80,7 +86,7 @@
                         
                     </td>
                     <td colspan="2">
-                    <label for="nom_propietario" class="form-label">Representante legal:</label>
+                    <label for="nom_propietario" class="form-label">* Representante legal:</label>
                         <input type="text" name="nom_propietario" id="nom_propietario" class ="form-control" readonly style="background-color: #e3f1f1;">
                     </td>                                     
                 </tr>
