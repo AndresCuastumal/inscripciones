@@ -45,7 +45,7 @@
                         <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control">
                             <option value="">Seleccione...</option>
                             <?php
-                            $consultaBarrioVereda = $conn->prepare("SELECT * FROM barrio");
+                            $consultaBarrioVereda = $conn->prepare("SELECT * FROM barrio order by nom_barrio");
                             $consultaBarrioVereda->execute();
                             while ($row_registro = $consultaBarrioVereda->fetch(PDO::FETCH_ASSOC)) { ?>
                                 <option value="<?= $row_registro['id']; ?>"><?= $row_registro['nom_barrio']; ?></option>

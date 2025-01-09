@@ -181,7 +181,7 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
             inputNomComercial.value = data.nom_comercial;
             inputNit.value = data.nit;
             inputDV.value = data.digito_verificacion;
-            inputDV.value = data.digito_verificacion;
+            inputEstado.checked = data.estado == 1;
             inputDirEstablecimiento.value = data.dir_establecimiento;
             inputMailEstablecimiento.value = data.correo_establecimiento;
             inputTelEstablecimiento.value = data.tel_establecimiento;
