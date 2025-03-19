@@ -24,11 +24,11 @@
                 <tr>    
                     <td colspan ="2">
                         <label for="nit" class="form-label">* NIT Establecimiento:</label>
-                        <input type="text" name="nit" id="nit" class ="form-control" readonly style="background-color: #e3f1f1;" required>                    
+                        <input type="text" name="nit" id="nit" class ="form-control" required>                    
                     </td>
                     <td>
                         <label for="dv" class="form-label">* DV:</label>
-                        <input type="text" name="dv" id="dv" class ="form-control" readonly style="background-color: #e3f1f1;">
+                        <input type="number" name="dv" id="dv" class ="form-control" >
                     </td>
                     <td>
                         <label for="sucursal" class="form-label">Sucursal:</label>
