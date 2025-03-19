@@ -1,4 +1,4 @@
-<div class="modal fade" id="editEstablecimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="editEstablecimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-warning text-white d-flex justify-content-between align-items-center">
@@ -14,7 +14,7 @@
                 <tr>
                     <td colspan = "2">    
                         <label for="razon_social" class="form-label">* Razon social:</label>
-                        <input type="text" name="razon_social" id="razon_social" class ="form-control">
+                        <input type="text" name="razon_social" id="razon_social" class ="form-control" required>
                     </td>
                     <td colspan = "2">    
                         <label for="nom_comercial" class="form-label">* Nombre comercial:</label>
@@ -24,7 +24,7 @@
                 <tr>    
                     <td colspan ="2">
                         <label for="nit" class="form-label">* NIT Establecimiento:</label>
-                        <input type="text" name="nit" id="nit" class ="form-control" readonly style="background-color: #e3f1f1;">                    
+                        <input type="text" name="nit" id="nit" class ="form-control" readonly style="background-color: #e3f1f1;" required>                    
                     </td>
                     <td>
                         <label for="dv" class="form-label">* DV:</label>
@@ -38,7 +38,7 @@
                 <tr>                    
                     <td colspan="2">
                         <label for="dir_establecimiento" class="form-label">* Dirección:</label>
-                        <input type="text" name="dir_establecimiento" id="dir_establecimiento" class ="form-control" >
+                        <input type="text" name="dir_establecimiento" id="dir_establecimiento" class ="form-control" required>
                     </td>
                     <td colspan="2">
                         <label for="id_barrio_vereda" class="form-label">* Barrio establecimiento:</label>                        
@@ -50,6 +50,25 @@
                             while ($row_registro = $consultaBarrioVereda->fetch(PDO::FETCH_ASSOC)) { ?>
                                 <option value="<?= $row_registro['id']; ?>"><?= $row_registro['nom_barrio']; ?></option>
                             <?php } ?>
+                        </select>                        
+                    </td>
+                </tr>
+                <tr>                    
+                    <td colspan="2">
+                        <label for="sujeto_editEstablecimiento" class="form-label">* Sujeto:</label>                        
+                        <select name="sujeto_editEstablecimiento" id="sujeto_editEstablecimiento" class="form-control" required>
+                            <option value="">Seleccione...</option>
+                            <?php
+                            $consultaSujeto = $conn->prepare("SELECT * FROM sujeto order by nom_sujeto");
+                            $consultaSujeto->execute();
+                            while ($registro = $consultaSujeto->fetch(PDO::FETCH_ASSOC)) { ?>
+                                <option value="<?= $registro['id']; ?>"><?= $registro['nom_sujeto']; ?></option>
+                            <?php } ?>
+                        </select>                        
+                    </td>
+                    <td colspan="2">
+                        <label for="clase_editEstablecimiento" class="form-label">* Clase:</label>
+                        <select name="clase_editEstablecimiento" id="clase_editEstablecimiento" class="form-control" required>
                         </select>                        
                     </td>
                 </tr>
@@ -154,7 +173,80 @@
     }
 });
 </script>
+<!-- SCRIPT QUE AYUDA A CARGAR UN SELECT LIST DEPENDIENTE DE OTRO ANTERIOR EN ESTE CASO DEPENDIENDO DEL SUJETO ESCOGIDO -->
 
+<script>
+$(document).ready(function(){
+    console.log("Document ready. El script está cargado.");
+
+    // Carga de clases según el sujeto seleccionado
+    $(document).on('change', '#sujeto_editEstablecimiento', function(){
+        var selectedSujeto = $(this).val(); 
+        console.log("Sujeto seleccionado:", selectedSujeto);               
+        $.ajax({
+            type: "POST",
+            url: "crud/cargar_clase.php", // Archivo PHP para cargar clase
+            data: { id_sujeto: selectedSujeto },
+            success: function(data){
+                console.log("Respuesta de la carga:", data);
+                $("#clase_editEstablecimiento").html(data);
+            },
+        });
+    });   
+});
+</script>
+
+<!-- SCRIPT PARA VALIDAR EN EL FORMULARIO EDITAR ESTABLECIMIENTO SI SUJETO Y CLASE NO ESTÁN VACÍOS -->
+
+<script>
+    // Detectar el intento de cierre del modal
+    document.getElementById('editEstablecimiento').addEventListener('hide.bs.modal', function (event) {
+        // Obtener los valores de los select
+        let barrio = document.getElementById('id_barrio_vereda').value;
+        let sujeto = document.getElementById('sujeto_editEstablecimiento').value;
+        let clase = document.getElementById('clase_editEstablecimiento').value;
+
+        // Validar si los campos son inválidos
+        if (!barrio || barrio ==='1' || !sujeto || !clase || clase.toLowerCase() === 'Establecimiento') {
+            // Evitar el cierre del modal
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            // Mostrar alerta o resaltar los campos inválidos
+            alert('Debe seleccionar un barrio, sujeto y una clase válida antes de cerrar la ventana.');
+
+            // Opcional: Agregar una clase para resaltar los campos requeridos
+            if (!sujeto) {
+                document.getElementById('sujeto_editEstablecimiento').classList.add('is-invalid');
+            } else {
+                document.getElementById('sujeto_editEstablecimiento').classList.remove('is-invalid');
+            }
+            if (!clase || clase === '0') {
+                document.getElementById('clase_editEstablecimiento').classList.add('is-invalid');
+            } else {
+                document.getElementById('clase_editEstablecimiento').classList.remove('is-invalid');
+            }
+            if (!barrio || barrio=== '1') {
+                document.getElementById('id_barrio_vereda').classList.add('is-invalid');
+            } else {
+                document.getElementById('id_barrio_vereda').classList.remove('is-invalid');
+            }
+        }
+    });
+
+    // Remover clase "is-invalid" al cambiar los select
+    document.getElementById('sujeto_editEstablecimiento').addEventListener('change', function () {
+        if (this.value) {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    document.getElementById('clase_editEstablecimiento').addEventListener('change', function () {
+        if (this.value.toLowerCase() !== 'ninguno') {
+            this.classList.remove('is-invalid');
+        }
+    });
+</script>
 
 
 

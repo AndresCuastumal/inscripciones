@@ -21,7 +21,7 @@ if($_SESSION){
 
         // Consultar datos faltantes para imprimir inscripción
 
-        $sql_consultarEstablecimiento= $conn2->prepare("select no_inscripcion, fecha_registro, tel_establecimiento 
+        $sql_consultarEstablecimiento= $conn2->prepare("select no_inscripcion,nit,digito_verificacion, fecha_registro, tel_establecimiento 
                                                         from establecimiento 
                                                         where id = :id_establecimiento");
         $sql_consultarEstablecimiento->bindParam(':id_establecimiento', $id);
@@ -62,10 +62,10 @@ else header('Location:../index.php');
     </table>
     <table class="table table-sm mt-1 table-bordered" style="font-size: 12px; line-height: 1; width: 100%; table-layout: fixed;">
         <tr>
-            <td colspan="2">Fecha de inscripción: <?= $registro['fecha_registro'];?></td><td colspan="2">Número de inscripción: <?= $registro['no_inscripcion'];?> </td>
+            <td colspan="2">Fecha de inscripción: <?= $registro['fecha_registro'];?></td><td colspan="2">Número de inscripción: <?= '52001'.$registro['nit'].$registro['digito_verificacion'];?> </td>
         </tr>
         <tr>
-            <td colspan="4">Razón social: <?= $nom_comercial;?> <?= $nit;?></td></td>
+            <td colspan="4">Razón social: <?= $nom_comercial;?> <?= $registro['nit'].$registro['digito_verificacion'];?></td></td>
         </tr>
         <tr>
             <td colspan="2">Propietario: <?= $nom_propietario;?></td><td colspan="2">No. de identificación: <?= $doc_propietario;?></td>

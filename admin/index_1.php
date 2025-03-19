@@ -9,7 +9,7 @@ switch($accion){
     $bandera=1;
     $busqueda=(isset($_POST['busqueda']))?$_POST['busqueda']:"";
     $busqueda='%'.$busqueda.'%';    
-    $sentenciaSQL=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit as NIT, e.fecha_registro,
+    $sentenciaSQL=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, e.fecha_registro,
                                     p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario 
                                       FROM establecimiento e 
                                       RIGHT JOIN propietario p ON e.id_propietario = p.id
@@ -64,11 +64,11 @@ switch($accion){
         <table class="table">
           <thead>
             <tr class="text-secondary">
-            <th colspan="5" class="text-secondary">DATOS GENERALES</th>
+            <th colspan="6" class="text-secondary">DATOS GENERALES</th>
             <th colspan="4" class="border-end text-secondary">ACCIONES PARA ESTABLECIMIENTO</th>
             </tr>
             <tr>
-              <th class="text-primary">Nombre establecimiento</th> <th class="text-primary">NIT establecimiento</th> <th class="text-primary">Fecha de Inscripción</th>
+              <th class="text-primary">ID</th> <th class="text-primary">Nombre establecimiento</th> <th class="text-primary">NIT establecimiento</th> <th class="text-primary">Fecha de Inscripción</th>
               <th class="text-primary">Nombre Propietario</th> <th class="text-primary">Doc Propietario</th>              
               <th class="border-end text-primary">Editar propietario</th>
               <th class="text-primary"> Editar establecimiento</th> <th class="text-primary"> Solicitar visita</th> <th class="text-primary">Nuevo</th>
@@ -79,7 +79,7 @@ switch($accion){
               while($registro=$sentenciaSQL->fetch(PDO::FETCH_ASSOC)){
             ?>
             <tr>
-              <td><?= $registro['nom_comercial'];?></td><td><?= $registro['NIT']; ?></td><td><?= date('d-m-Y', strtotime($registro['fecha_registro'])); ?>
+              <td><?= $registro['id'];?></td><td><?= $registro['nom_comercial'];?></td><td><?= $registro['nit']; ?></td><td><?= date('d-m-Y', strtotime($registro['fecha_registro'])); ?>
               <td><?= $registro['nom_propietario']." ".$registro['ape_propietario'];?></td><td><?= $registro['doc']; ?></td>
               
               <td class ="border-end">
@@ -110,7 +110,7 @@ switch($accion){
             </tr>            
             <?php } ?>
             <tr>
-            <td class="bg-primary text-white" colspan="8"><br>
+            <td class="bg-primary text-white" colspan="9"><br>
               <p>¿No se encuentra el establecimiento y representante legal consultado? Realice una nueva inscripción:</p>
             </td>
             <td td class="bg-primary text-white">
@@ -159,6 +159,8 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
         let inputDirEstablecimiento = editEstablecimiento.querySelector('.modal-body #dir_establecimiento')
         let inputMailEstablecimiento = editEstablecimiento.querySelector('.modal-body #correo_establecimiento')
         let inputTelEstablecimiento = editEstablecimiento.querySelector('.modal-body #tel_establecimiento')
+        let inputSujetoEditEstablecimiento = editEstablecimiento.querySelector('.modal-body #sujeto_editEstablecimiento')
+        let inputClaseEditEstablecimiento = editEstablecimiento.querySelector('.modal-body #clase_editEstablecimiento')
         let inputNomBarrio = editEstablecimiento.querySelector('.modal-body #id_barrio_vereda')
         let inputIdPropietario = editEstablecimiento.querySelector('.modal-body #id_propietario')
         let inputDocPropietario = editEstablecimiento.querySelector('.modal-body #doc_propietario')
@@ -186,6 +188,17 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
             inputMailEstablecimiento.value = data.correo_establecimiento;
             inputTelEstablecimiento.value = data.tel_establecimiento;
             inputNomBarrio.value = data.id_barrio_vereda;
+            inputSujetoEditEstablecimiento.value = data.id_sujeto;
+            
+            // Cargar el select de clase con el id y nombre
+            let selectClase = inputClaseEditEstablecimiento;
+            selectClase.innerHTML = ''; // Limpia el select antes de cargar
+            let option = document.createElement('option');
+            option.value = data.id_clase;
+            option.textContent = data.nom_clase;
+            option.selected = true; // Marcar como seleccionado
+            selectClase.appendChild(option);
+
             inputIdPropietario.value = data.id_propietario;
             inputDocPropietario.value = data.doc;
             inputNomPropietario.value = data.nom_propietario+" "+data.ape_propietario;
@@ -436,7 +449,6 @@ document.getElementById('formPropietario').addEventListener('submit', function(e
         })
     });
 </script>
-
 
 <?php
 include("pie.php");
