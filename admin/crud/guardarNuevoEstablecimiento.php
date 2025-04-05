@@ -39,9 +39,9 @@ if($_SESSION){
         try {
             // Insertar en la base de datos con PDO
             $sql_guardar = $conn2->prepare("INSERT INTO establecimiento (id_propietario, id_barrio_vereda, id_clase, no_inscripcion, nit, digito_verificacion, razon_social, nom_comercial, 
-                sucursal, fecha_registro, estado, dir_establecimiento, correo_establecimiento, tel_establecimiento, id_usr_registro, id_comuna, id_sujeto) 
+                sucursal, fecha_registro, estado, dir_establecimiento, correo_establecimiento, tel_establecimiento, id_usr_registro) 
             VALUES (:id_propietario, :id_barrio_vereda, :id_clase, :no_inscripcion,:nit, :dv, :razon_social, :nom_comercial, 
-                :sucursal, :fecha_registro, '1',:dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :id_usr_registro, :id_comuna, :id_sujeto)");
+                :sucursal, :fecha_registro, '1',:dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :id_usr_registro)");
 
             $sql_guardar->bindValue(':id_propietario', $id_propietario);
             $sql_guardar->bindValue(':id_barrio_vereda', $id_barrio_vereda);
@@ -58,8 +58,8 @@ if($_SESSION){
             $sql_guardar->bindValue(':tel_establecimiento', $tel_establecimiento);
             
             $sql_guardar->bindValue(':id_usr_registro', $idUsuario);
-            $sql_guardar->bindValue(':id_comuna', $id_comuna['id_comuna']);
-            $sql_guardar->bindValue(':id_sujeto', $id_sujeto);
+            //$sql_guardar->bindValue(':id_comuna', $id_comuna['id_comuna']);
+            //$sql_guardar->bindValue(':id_sujeto', $id_sujeto);
             
 
             if ($sql_guardar->execute()) {
