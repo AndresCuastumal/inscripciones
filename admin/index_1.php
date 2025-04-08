@@ -188,8 +188,34 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
             inputMailEstablecimiento.value = data.correo_establecimiento;
             inputTelEstablecimiento.value = data.tel_establecimiento;
             inputNomBarrio.value = data.id_barrio_vereda;
-            inputSujetoEditEstablecimiento.value = data.id_sujeto;
             
+
+            // Cargar el select de sujeto con el id y nombre
+            let selectSujeto = inputSujetoEditEstablecimiento;
+            selectSujeto.innerHTML = ''; // Limpia el select antes de cargar
+            let optionSujeto = document.createElement('option');
+            optionSujeto.value = data.id_sujeto;
+            optionSujeto.textContent = data.nom_sujeto;
+            optionSujeto.selected = true; // Marcar como seleccionado
+            selectSujeto.appendChild(optionSujeto);
+
+            // Ahora traer los demás sujetos desde el backend
+            fetch("crud/cargar_sujeto.php")
+                .then(response => response.json())
+                .then(sujetos => {
+                    sujetos.forEach(sujeto => {
+                        if (sujeto.id != data.id) {
+                            let option = document.createElement('option');
+                            option.value = sujeto.id;
+                            option.textContent = sujeto.nom_sujeto;
+                            selectSujeto.appendChild(option);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar los sujetos:', error);
+                });
+
             // Cargar el select de clase con el id y nombre
             let selectClase = inputClaseEditEstablecimiento;
             selectClase.innerHTML = ''; // Limpia el select antes de cargar
@@ -198,6 +224,9 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
             option.textContent = data.nom_clase;
             option.selected = true; // Marcar como seleccionado
             selectClase.appendChild(option);
+
+            
+
 
             inputIdPropietario.value = data.id_propietario;
             inputDocPropietario.value = data.doc;

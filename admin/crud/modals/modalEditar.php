@@ -56,14 +56,7 @@
                 <tr>                    
                     <td colspan="2">
                         <label for="sujeto_editEstablecimiento" class="form-label">* Sujeto:</label>                        
-                        <select name="sujeto_editEstablecimiento" id="sujeto_editEstablecimiento" class="form-control" required>
-                            <option value="">Seleccione...</option>
-                            <?php
-                            $consultaSujeto = $conn->prepare("SELECT * FROM sujeto order by nom_sujeto");
-                            $consultaSujeto->execute();
-                            while ($registro = $consultaSujeto->fetch(PDO::FETCH_ASSOC)) { ?>
-                                <option value="<?= $registro['id']; ?>"><?= $registro['nom_sujeto']; ?></option>
-                            <?php } ?>
+                        <select name="sujeto_editEstablecimiento" id="sujeto_editEstablecimiento" class="form-control" required>                                                        
                         </select>                        
                     </td>
                     <td colspan="2">
