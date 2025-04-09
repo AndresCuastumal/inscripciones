@@ -96,8 +96,9 @@ switch($accion){
               </td>
               <td>
                 <?php if(isset($registro['nom_comercial'])){ ?>
-                <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#solicitarVisita" data-bs-id="<?= $registro['id']; ?>">
+                <button class="btnSolicitarVisita btn btn-sm btn-success" data-bs-id="<?= $registro['id']; ?>">
                 <i class="fa-solid fa-bell-concierge"></i>
+                </button>
                 <?php } ?>
               </td>
               <td>
@@ -139,7 +140,8 @@ switch($accion){
   <?php include "crud/modals/modalEditPropietario.php";  ?>
   <?php include "crud/modals/modalSolicitarVisita.php";  ?>
   <?php include "crud/modals/modalNuevoPropietario.php";  ?> 
-  <?php include "crud/modals/modalNuevoEstablecimiento2.php";  ?> 
+  <?php include "crud/modals/modalNuevoEstablecimiento2.php";  ?>
+  <?php include "crud/modals/modalAviso.php";  ?> 
 </body>
 </html>
 
@@ -277,58 +279,97 @@ editPropietario.addEventListener('shown.bs.modal', event => {
 </script>
 
 <!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegSolicitudVisita.php PARA SOLICITUD VISITA-->
-
 <script>
-let solicitarVisita = document.getElementById('solicitarVisita');
-solicitarVisita.addEventListener('shown.bs.modal', event => {
-        let button = event.relatedTarget;
-        let id = button.getAttribute('data-bs-id');
-        let inputId = solicitarVisita.querySelector('.modal-body #id');
-        let inputNomComercial = solicitarVisita.querySelector('.modal-body #nom_comercial')
-        let inputNit = solicitarVisita.querySelector('.modal-body #nit')
-        let inputDv = solicitarVisita.querySelector('.modal-body #dv')
-        let inputDirEstablecimiento = solicitarVisita.querySelector('.modal-body #dir_establecimiento')
-        let inputTelEstablecimiento = solicitarVisita.querySelector('.modal-body #tel_establecimiento')
-        let inputNomBarrio = solicitarVisita.querySelector('.modal-body #nom_barrio')
-        let inputNomComuna = solicitarVisita.querySelector('.modal-body #nom_comuna')
-        let inputIdComuna = solicitarVisita.querySelector('.modal-body #id_comuna')
-        let inputNomPropietario = solicitarVisita.querySelector('.modal-body #nom_propietario')
-        let inputDocPropietario = solicitarVisita.querySelector('.modal-body #doc_propietario')
-        let inputNomSolicitante = solicitarVisita.querySelector('.modal-body #nom_solicitante')
-        let inputNomClase = solicitarVisita.querySelector('.modal-body #nom_clase')
-        let inputIdSujeto = solicitarVisita.querySelector('.modal-body #id_sujeto_visita')
-        //let inputObservacion = solicitarVisita.querySelector('.modal-body #observacion')
-                
-        let url = "crud/getRegSolicitudVisita.php";
+
+// ESTE SCRIPT SE ENCARGA DE VERIFICAR SI EL ESTABLECIMIENTO YA TIENE UNA SOLICITUD REGISTRADA, 
+// SI NO LA TIENE SE ABRE EL MODAL PARA SOLICITAR VISITA, SINO SE MUESTRA UN MENSAJE DE AVISO
+
+document.querySelectorAll('.btnSolicitarVisita').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault(); //Previene que el modal se abra antes de verificar
+        let id = this.getAttribute('data-bs-id'); // Obtener el ID del establecimiento desde el atributo data-bs-id
+        console.log("ID antes de abrir el modal:", id);
+        let urlVerificar = "crud/verificarSolicitudExistente.php";
         let formData = new FormData();
-        formData.append('id', id  );
+        formData.append('id', id);
 
-        fetch(url, {
-            method: "POST",
+        fetch(urlVerificar, {
+            method: 'POST',
             body: formData
-        }).then(response => response.json())
+        }).then(res => res.json())
         .then(data => {
-            console.log('Datos recibidos:', data);
-            inputId.value = data.id;
-            inputNomComercial.value = data.nom_comercial;
-            inputNit.value = data.nit;
-            inputDv.value = data.digito_verificacion;
-            inputDirEstablecimiento.value = data.dir_establecimiento;
-            inputTelEstablecimiento.value = data.tel_establecimiento;
-            inputNomBarrio.value = data.nom_barrio;
-            inputNomComuna.value = data.nom_comuna;
-            inputIdComuna.value = data.id_comuna;
-            inputNomPropietario.value = data.nom_propietario+" "+data.ape_propietario;
-            inputDocPropietario.value = data.doc;
-            inputNomSolicitante.value = data.nom_propietario+" "+data.ape_propietario;
-            inputNomClase.value = data.nom_clase; 
-            inputIdSujeto.value = data.id_sujeto; 
-            //inputObservacion.value = data.observacion; 
+            console.log("Respuesta del backend:", data);
+            if (data.existe) {
+                let mensaje = `Este establecimiento ya tiene una solicitud registrada. Fue realizada el día ${data.fecha}.`;
+                document.getElementById('mensajeAviso').textContent = mensaje;
+                let avisoModal = new bootstrap.Modal(document.getElementById('modalAviso'));
+                avisoModal.show();
+            } else {
+                // Setear el ID al modal para usarlo en shown.bs.modal
+                let modalElement = document.getElementById('solicitarVisita');
+                modalElement.setAttribute('data-bs-id', id);
 
-        }).catch(err => {
-            console.error('Error en la solicitud fetch:', err);
+                let modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        }).catch(error => {
+            console.error("Error al verificar la solicitud:", error);
         });
     });
+});
+
+//DE AQUÍ EN ADELANTE SE CARGAN LOS DATOS DEL ESTABLECIMIENTO EN EL MODAL DE SOLICITUD VISITA SI NO FUE ENCONTRADA EN LA TABLA DE SOLICITUD
+
+let solicitarVisita = document.getElementById('solicitarVisita');
+solicitarVisita.addEventListener('shown.bs.modal', event => {
+    //let button = event.relatedTarget;
+    let id = solicitarVisita.getAttribute('data-bs-id');
+
+    console.log("ID dentro del modal:", id); // <-- útil para debug
+
+    let inputId = solicitarVisita.querySelector('.modal-body #id');
+    let inputNomComercial = solicitarVisita.querySelector('.modal-body #nom_comercial')
+    let inputNit = solicitarVisita.querySelector('.modal-body #nit')
+    let inputDv = solicitarVisita.querySelector('.modal-body #dv')
+    let inputDirEstablecimiento = solicitarVisita.querySelector('.modal-body #dir_establecimiento')
+    let inputTelEstablecimiento = solicitarVisita.querySelector('.modal-body #tel_establecimiento')
+    let inputNomBarrio = solicitarVisita.querySelector('.modal-body #nom_barrio')
+    let inputNomComuna = solicitarVisita.querySelector('.modal-body #nom_comuna')
+    let inputIdComuna = solicitarVisita.querySelector('.modal-body #id_comuna')
+    let inputNomPropietario = solicitarVisita.querySelector('.modal-body #nom_propietario')
+    let inputDocPropietario = solicitarVisita.querySelector('.modal-body #doc_propietario')
+    let inputNomSolicitante = solicitarVisita.querySelector('.modal-body #nom_solicitante')
+    let inputNomClase = solicitarVisita.querySelector('.modal-body #nom_clase')
+    let inputIdSujeto = solicitarVisita.querySelector('.modal-body #id_sujeto_visita')
+
+    let url = "crud/getRegSolicitudVisita.php";
+    let formData = new FormData();
+    formData.append('id', id);
+
+    fetch(url, {
+        method: "POST",
+        body: formData
+    }).then(response => response.json())
+    .then(data => {
+        console.log('Datos recibidos:', data);
+        inputId.value = data.id;
+        inputNomComercial.value = data.nom_comercial;
+        inputNit.value = data.nit;
+        inputDv.value = data.digito_verificacion;
+        inputDirEstablecimiento.value = data.dir_establecimiento;
+        inputTelEstablecimiento.value = data.tel_establecimiento;
+        inputNomBarrio.value = data.nom_barrio;
+        inputNomComuna.value = data.nom_comuna;
+        inputIdComuna.value = data.id_comuna;
+        inputNomPropietario.value = data.nom_propietario + " " + data.ape_propietario;
+        inputDocPropietario.value = data.doc;
+        inputNomSolicitante.value = data.nom_propietario + " " + data.ape_propietario;
+        inputNomClase.value = data.nom_clase;
+        inputIdSujeto.value = data.id_sujeto;
+    }).catch(err => {
+        console.error('Error en la solicitud fetch:', err);
+    });
+});
 </script>
 
 <!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegSolicitudVisita.php PARA IMPRIMIR INSCRIPCION -->

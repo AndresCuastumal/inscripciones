@@ -17,11 +17,13 @@
     
     $sqlJefe->execute();
     $row_jefe = $sqlJefe->fetch(PDO::FETCH_ASSOC);
+
+    setlocale(LC_TIME, 'es_ES.UTF-8');
+    date_default_timezone_set('America/Bogota');
 ?>
     
     <!DOCTYPE html>
-    <html lang="es">
-    
+    <html lang="es">    
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <head>
         <div class="alert alert-success" style="text-align: right">        
