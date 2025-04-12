@@ -14,6 +14,9 @@ if($_SESSION){
         $correo_propietario =   $_POST['edit_correo_propietario'];
         $fecha_actualizacion =  date('Y-m-d H:i:s');
 
+        $conn2->query("SET @usuario_modificacion = '$idUsuario'");
+
+
         try {
             $sql_actualizar = $conn2->prepare("UPDATE propietario SET 
                 nom_propietario=:nom_propietario, ape_propietario=:ape_propietario, tipo_doc=:tipo_doc, doc=:doc, tel_propietario=:tel_propietario,
