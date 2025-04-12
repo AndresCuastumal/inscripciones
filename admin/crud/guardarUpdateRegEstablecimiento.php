@@ -11,16 +11,21 @@ if($_SESSION){
         $id_barrio_vereda =     $_POST['id_barrio_vereda'];
         $razon_social =         $_POST['razon_social'];
         $nom_comercial =        $_POST['nom_comercial'];
+        $nit =                  $_POST['nit'];
+        $dv =                   $_POST['dv'];
         $sucursal =             $_POST['sucursal'];
         $fecha_actualizacion =  date('Y-m-d H:i:s');
         $dir_establecimiento =  $_POST['dir_establecimiento'];
         $correo_establecimiento=$_POST['correo_establecimiento'];
         $tel_establecimiento =  $_POST['tel_establecimiento'];
         $estado =               (isset($_POST['estado']))?$_POST['estado']:"0";
+
+        $conn2->query("SET @usuario_modificacion = '$idUsuario'");
+
         try {
             $sql_actualizar = $conn2->prepare("UPDATE establecimiento SET 
                 id_propietario=:id_propietario, id_barrio_vereda=:id_barrio_vereda, id_clase=:id_clase, razon_social=:razon_social, nom_comercial=:nom_comercial,
-                sucursal=:sucursal, fecha_actualizacion=:fecha_actualizacion, estado=:estado, dir_establecimiento=:dir_establecimiento, 
+                nit=:nit,digito_verificacion=:dv,sucursal=:sucursal, fecha_actualizacion=:fecha_actualizacion, estado=:estado, dir_establecimiento=:dir_establecimiento, 
                 correo_establecimiento=:correo_establecimiento, tel_establecimiento=:tel_establecimiento, id_usr_update=:id_usr_update
                 WHERE id=:id_establecimiento");
             
@@ -30,6 +35,8 @@ if($_SESSION){
             $sql_actualizar->bindValue(':id_clase', $id_clase);
             $sql_actualizar->bindValue(':razon_social', $razon_social);
             $sql_actualizar->bindValue(':nom_comercial', $nom_comercial);
+            $sql_actualizar->bindValue(':nit', $nit);
+            $sql_actualizar->bindValue(':dv', $dv);
             $sql_actualizar->bindValue(':sucursal', $sucursal);
             $sql_actualizar->bindValue(':fecha_actualizacion', $fecha_actualizacion);
             $sql_actualizar->bindValue(':dir_establecimiento', $dir_establecimiento);
