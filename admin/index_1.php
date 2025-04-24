@@ -139,12 +139,10 @@ switch($accion){
   <?php include "crud/modals/modalEditar.php";  ?>
   <?php include "crud/modals/modalEditPropietario.php";  ?>
   <?php include "crud/modals/modalSolicitarVisita.php";  ?>
-  <?php include "crud/modals/modalNuevoPropietario.php";  ?> 
+  <?php include "crud/modals/modalNuevoPropietario.php";  ?>
+  <?php include "crud/modals/modalNuevoEstablecimiento.php";  ?>  
   <?php include "crud/modals/modalNuevoEstablecimiento2.php";  ?>
   <?php include "crud/modals/modalAviso.php";  ?> 
-</body>
-</html>
-
 <!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegEstablecimiento.php -->
 
 <script>
@@ -451,63 +449,9 @@ let nuevoPropietario = document.getElementById('nuevoPropietario');
         let button = event.relatedTarget;         
     });
 </script>
+<!-- SCRIPT PARA VALIDAR SI EL PROPIETARIO EXISTE -->
 
-<!-- SCRIPT PARA CARGAR UN PRIMER MODAL, GUARDAR DATOS Y DESPUÉS ABRIR UN SEGUNDO MODAL 
-CONDICIONADO CON GUARDAR SÓLO EL MODAL PROPIETARIO Y TERMIAR O CONTINUAR CON EL MODAL DEL ESTABLECIMIENTO-->
-
-<script>
-document.getElementById('formPropietario').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evitar que el formulario se envíe de manera tradicional
-    const formData = new FormData(this);
-    const accion = event.submitter.value;
-
-    fetch('crud/guardarPropietario.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        if (data.success) {
-            // Cierra el modal actual
-            var modalActual = bootstrap.Modal.getInstance(document.getElementById('nuevoPropietario')); 
-            if (modalActual) {
-                modalActual.hide();
-            }
-            if (accion === "guardar") {
-                alert('Datos del representante legal guardados correctamente.');
-                window.location.href = 'index_1.php'; // Redirige a index.php
-            } else if (accion === "continuar") {
-              // Aquí se obtiene el id y el nombre del nuevo propietario
-              const nuevoId = data.id;
-              const nom_propietario = data.nom_propietario;
-              const ape_propietario = data.ape_propietario;
-              console.log(nuevoId, nom_propietario, ape_propietario); 
-
-              // Abre el modal de nuevo establecimiento
-              var nuevoEstablecimiento = new bootstrap.Modal(document.getElementById('nuevoEstablecimiento'));
-              nuevoEstablecimiento.show(); 
-
-              // Espera un breve momento para asegurarte de que está cargado
-              setTimeout(function() {
-                  const idPropietarioField = document.getElementById('idP');
-                  if (idPropietarioField) {
-                      idPropietarioField.value = nuevoId;
-                      document.getElementById('nomape_propietario').value = nom_propietario + ' ' + ape_propietario + ' ' + nuevoId;
-                      console.log("Valor asignado al campo idP:", idPropietarioField.value);
-                  } else {
-                      console.error("Campo id_propietario no encontrado.");
-                  }
-              }, 500); // Ajusta el tiempo según sea necesario
-              }
-        } else {
-          alert('Hubo un error al guardar el propietario.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-</script>
+<script src="crud/Validaciones/validarPropietario.js"></script>
 
 <!-- SCRIPT PARA MOSTRAR UN MENSAJE INFORMATIVO EN EL ÍCONO "i" -->
 

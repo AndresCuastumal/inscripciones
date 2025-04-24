@@ -61,4 +61,4 @@
         </div>
     </div>
 </div>
-<?php include "crud/modals/modalNuevoEstablecimiento.php";  ?>   
+  

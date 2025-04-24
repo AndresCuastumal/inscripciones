@@ -39,6 +39,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">      
         <script src="../config/js/jquery.min.js"></script>
         <script src="../config/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Barra de menú -->        
         <nav class="navbar navbar-expand navbar-dark bg-primary">

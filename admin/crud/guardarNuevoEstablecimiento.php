@@ -63,10 +63,25 @@ if($_SESSION){
             
 
             if ($sql_guardar->execute()) {
-                $last_id = $conn2->lastInsertId(); // Obtiene el ID del último registro insertado
-                echo json_encode(['success' => true, 'id' => $last_id]);
-                header('Content-Type: text/html');
-                echo "<script>alert('Se realizó el registro exitosamente'); window.location.href='../index.php';</script>";
+                //$last_id = $conn2->lastInsertId(); // Obtiene el ID del último registro insertado
+                echo "<!DOCTYPE html>
+                <html lang='es'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                </head>
+                <body>
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Guardado',
+                            text: 'El establecimiento fue registrado exitosamente.'
+                        }).then(() => {
+                            window.location.href = '../index.php';
+                        });
+                    </script>
+                </body>
+                </html>";
                 exit();
             } else {
                 echo json_encode(['success' => false, 'message' => 'Error al guardar en la base de datos.']);

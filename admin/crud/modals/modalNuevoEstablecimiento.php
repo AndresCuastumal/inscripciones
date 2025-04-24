@@ -72,7 +72,7 @@
                                 </td>
                                 <td colspan="2">
                                     <label for="id_barrio_vereda" class="form-label">* Barrio establecimiento:</label>
-                                    <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control" required onchange="obtenerDatos()">
+                                    <select name="id_barrio_vereda" id="id_barrio_vereda" class="form-control" required>
                                         <option value="">Seleccione...</option>
                                         <?php
                                         $consultaBarrioVereda = $conn->prepare("SELECT id, nom_barrio, id_comuna FROM barrio order by nom_barrio");
