@@ -69,6 +69,7 @@ if($_SESSION){
                 <head>
                     <meta charset='UTF-8'>
                     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                    <script src='../../config/js/bootstrap.min.js'></script>
                 </head>
                 <body>
                     <script>
