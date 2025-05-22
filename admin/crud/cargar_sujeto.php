@@ -33,3 +33,4 @@ try {
         "error" => "Error al conectarse o ejecutar la consulta: " . $e->getMessage()
     ]);
 }
+?>
