@@ -26,7 +26,7 @@ try {
 
     // Enviar la respuesta en JSON
     echo json_encode($sujetos);
-    exit
+    exit;
 } catch (PDOException $e) {
     // Enviar error como JSON
     echo json_encode([
