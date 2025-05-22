@@ -4,21 +4,22 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Iniciar la sesión antes de enviar headers
+session_start();
+
 // Configura el header para que el navegador sepa que es JSON
 header('Content-Type: application/json');
+
 include '../../config/conexion.php';
-// Iniciar la sesión
-session_start();
+
 // Verificar si la sesión está activa
 if (!isset($_SESSION['id_usuario'])) {
     echo json_encode(['error' => 'No hay sesión activa.']);
     exit;
 }        
 try {
-    
-    
     // Consulta
-    $stmt = $conn->prepare("SELECT id, nom_sujeto FROM sujeto order by nom_sujeto asc");
+    $stmt = $conn->prepare("SELECT id, nom_sujeto FROM sujeto ORDER BY nom_sujeto ASC");
     $stmt->execute();
 
     $sujetos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -32,4 +33,3 @@ try {
         "error" => "Error al conectarse o ejecutar la consulta: " . $e->getMessage()
     ]);
 }
-?>
