@@ -39,9 +39,9 @@ if($_SESSION){
         try {
             // Insertar en la base de datos con PDO
             $sql_guardar = $conn2->prepare("INSERT INTO establecimiento (id_propietario, id_barrio_vereda, id_clase, no_inscripcion, nit, digito_verificacion, razon_social, nom_comercial, 
-                sucursal, fecha_registro, estado, dir_establecimiento, correo_establecimiento, tel_establecimiento, id_usr_registro) 
+                sucursal, fecha_registro, estado, dir_establecimiento, correo_establecimiento, tel_establecimiento, id_usr_registro,nuevo) 
             VALUES (:id_propietario, :id_barrio_vereda, :id_clase, :no_inscripcion,:nit, :dv, :razon_social, :nom_comercial, 
-                :sucursal, :fecha_registro, '1',:dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :id_usr_registro)");
+                :sucursal, :fecha_registro, '1',:dir_establecimiento, :correo_establecimiento, :tel_establecimiento, :id_usr_registro, '1');");
 
             $sql_guardar->bindValue(':id_propietario', $id_propietario);
             $sql_guardar->bindValue(':id_barrio_vereda', $id_barrio_vereda);
