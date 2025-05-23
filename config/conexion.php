@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('America/Bogota');
-//error_reporting(E_ALL & ~E_DEPRECATED & ~E_WARNING);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_WARNING);
 require_once __DIR__ . '/vendor/autoload.php'; //carga composer al proyecto.
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); //crea instancia de la clase dotenv
 $dotenv->load(); //va a la carpeta raiz, busca el archivo .env de variables de entorno 
