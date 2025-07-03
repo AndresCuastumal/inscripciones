@@ -1,97 +1,120 @@
 <?php
 include("cabecera.php");
-$accion=(isset($_POST['accion']))?$_POST['accion']:"";
-$option=(isset($_POST['opciones']))?$_POST['opciones']:"";
-$registro=0;
-    $bandera=1;
-    $anio_actual= date("Y");
-    
-    $sentenciaSQL=$conn->prepare("SELECT e.id, e.nom_comercial, e.nit as NIT, e.fecha_registro, e.dir_establecimiento,
-                                    c.nom_comuna,
-                                    sj.nom_sujeto,
-                                    p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario,
-                                    s.fecha_solicitud, s.visitado, s.id_usr_tecnico
-                                      FROM serviciosivc.establecimiento e 
-                                      INNER JOIN serviciosivc.propietario p ON e.id_propietario = p.id
-                                      INNER JOIN serviciosivc.solicitud s ON s.id_establecimiento = e.id
-                                      INNER JOIN bdfuid.barrio b ON b.id = e.id_barrio_vereda
-                                      inner JOIN bdfuid.comuna c ON c.id = b.id_comuna
-                                      INNER JOIN bdfuid.clase cl ON cl.id = e.id_clase
-                                      INNER JOIN bdfuid.sujeto sj ON sj.id = cl.id_sujeto
-                                      INNER JOIN bdfuid.usuario u ON u.id = s.id_usr_tecnico                                                                            
-                                      WHERE s.id_usr_tecnico = :id_usuario and YEAR(fecha_solicitud)=:anio_actual
-                                  ");    
-    $sentenciaSQL->bindParam(':id_usuario',$idUsuario);
-    $sentenciaSQL->bindParam(':anio_actual',$anio_actual);
-    $sentenciaSQL->execute();
-
-    //$registro=$sentenciaSQL->fetch(PDO::FETCH_LAZY); //MÉTODO QUE PERMITE CARGAR UNO A UNO LOS CAMPOS DE UN REGISTRO SEGÚN LA CONSULTA HECHA
+$anio_actual= date("Y");    
+$countSQL = $conn->prepare("SELECT COUNT(*) as total FROM serviciosivc.solicitud WHERE id_usr_tecnico = :id_usuario and YEAR(fecha_solicitud)=:anio_actual");
+$countSQL->bindParam(':id_usuario', $idUsuario);
+$countSQL->bindParam(':anio_actual', $anio_actual);
+$countSQL->execute();
+$totalRegistros = $countSQL->fetchColumn();
     
 ?>
-<body>
-  <div class="container-fluid p-5 bg-primary text-white text-center">
-    <div class="row">
-      <div class="col-sm-6 text-right" >
-        <h2>Sistema de Registro de Establecimientos</h2>
-        <p>Secretaría de Salud Municipal - Salud Ambiental</p>
-      </div>
-      <div class="col-sm-6">
-        <img src="img/inscripciones_largoHorizontal.png" width= "450px">
-      </div>
-    </div>
-  </div>
-    
-  <div class="container mt-5">
-    <div class="row">
-      <div class="bg-light text-info ">
-        <h3>Control de visitas</h3>
-        <p class="text-justify" >El sistema muestra un listado de establecimientos asignados a usted según sujeto y comuna que se encuentra registrado en el aplicativo FUID que han solicitado visita en el presente año.  
-          Usted debe verificar si ya ha realizado la visita correspondiente e ingresar la fecha de visita, y, si desea; alguna observación.</p>      
-      </div>    
-    </div>    
-  </div>
-  <div class="container mt-5 card text-center"> 
-    <?php if(isset($bandera)){if($sentenciaSQL->rowCount() > 0){?>
+<div class="container mt-5 card text-center"> 
+    <?php if($totalRegistros > 0) { 
+            // Configuración de paginación
+            $registrosPorPagina = 10;            
+            $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
+            
+            // Obtener página actual (si no está definida, será 1)
+            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            $paginaActual = max(1, min($paginaActual, $totalPaginas)); // Asegurar que esté entre 1 y totalPaginas
+            
+            // Calcular el inicio del LIMIT
+            $inicio = ($paginaActual - 1) * $registrosPorPagina;
+            
+            $sentenciaSQL=$conn->prepare("SELECT e.id, e.nom_comercial, e.nit as NIT, e.fecha_registro, e.dir_establecimiento,
+              c.nom_comuna,
+              sj.nom_sujeto,
+              p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario,
+              s.fecha_solicitud, s.visitado, s.id_usr_tecnico
+                FROM serviciosivc.establecimiento e 
+                INNER JOIN serviciosivc.propietario p ON e.id_propietario = p.id
+                INNER JOIN serviciosivc.solicitud s ON s.id_establecimiento = e.id
+                INNER JOIN bdfuid.barrio b ON b.id = e.id_barrio_vereda
+                inner JOIN bdfuid.comuna c ON c.id = b.id_comuna
+                INNER JOIN bdfuid.clase cl ON cl.id = e.id_clase
+                INNER JOIN bdfuid.sujeto sj ON sj.id = cl.id_sujeto
+                INNER JOIN bdfuid.usuario u ON u.id = s.id_usr_tecnico                                                                            
+                WHERE s.id_usr_tecnico = :id_usuario and YEAR(fecha_solicitud)=:anio_actual
+                limit :inicio, :registrosPorPagina
+            ");    
+            $sentenciaSQL->bindParam(':id_usuario',$idUsuario);
+            $sentenciaSQL->bindParam(':anio_actual',$anio_actual);
+            $sentenciaSQL->bindParam(':inicio', $inicio, PDO::PARAM_INT);
+            $sentenciaSQL->bindParam(':registrosPorPagina', $registrosPorPagina, PDO::PARAM_INT);
+            $sentenciaSQL->execute();
+            $registrosPagina = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);            
+    ?>
         <table class="table">
           <thead>
             <tr class="text-secondary">
-            <th colspan="8" class="text-secondary">DATOS GENERALES</th>
+            <th colspan="7" class="text-secondary">ESTABLECIMIENTOS SOLICITANTES DE VISITA</th>
             <th colspan="1" class="border-end text-secondary">ACCIONES</th>
             </tr>
             <tr>
               <th class="text-primary">Nombre establecimiento</th> <th class="text-primary">NIT establecimiento</th> <th class="text-primary">Fecha de solicitud</th>
-              <th class="text-primary">Nombre Propietario</th> <th class="text-primary">Doc Propietario</th><th class="text-primary">Comuna</th>
+              <th class="text-primary">Nombre Propietario</th> <th class="text-primary">Comuna</th>
               <th class="text-primary">Sujeto</th><th class="text-primary">Estado de visita</th> <th class="border-end text-primary">Actualizar estado visita</th>
             </tr>
           </thead>
           <tbody>
-            <?php
-              while($registro=$sentenciaSQL->fetch(PDO::FETCH_ASSOC)){
-            ?>
+            <?php foreach($registrosPagina as $registro): ?>
             <tr>
-              <td><?= $registro['nom_comercial'];?></td><td><?= $registro['NIT']; ?></td><td><?= date('d-m-Y', strtotime($registro['fecha_solicitud'])); ?>
-              <td><?= $registro['nom_propietario']." ".$registro['ape_propietario'];?></td><td><?= $registro['doc']; ?></td><td><?= $registro['nom_comuna']; ?></td>
-              <td><?= $registro['nom_sujeto']; ?></td><td><?= $registro['visitado']; ?></td>
+              <td><?= htmlspecialchars($registro['nom_comercial']); ?></td>
+              <td><?= htmlspecialchars($registro['NIT']); ?></td>
+              <td><?= date('d-m-Y', strtotime($registro['fecha_solicitud'])); ?></td>
+              <td><?= htmlspecialchars($registro['nom_propietario']." ".$registro['ape_propietario']); ?></td>
+              <td><?= htmlspecialchars($registro['nom_comuna']); ?></td>
+              <td><?= htmlspecialchars($registro['nom_sujeto']); ?></td>
+              <td><?= htmlspecialchars($registro['visitado']); ?></td>
               
               <td class="border-end">                
-                <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#imprimirInscripcion" data-bs-id="<?= $registro['id']; ?>">
-                <i class="fa-solid fa-pen-to-square"></i></a>                
+                <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#actualizarVisita" data-bs-id="<?= $registro['id']; ?>">
+                <i class="fa-solid fa-pencil"></i></a>                
               </td>
             </tr>            
-            <?php } ?>            
+            <?php endforeach; ?>            
           </tbody>
         </table>
-      <?php } else{ ?>
+        
+        <!-- Paginación -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <?php if($paginaActual > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?pagina=<?= $paginaActual - 1; ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                
+                <?php for($i = 1; $i <= $totalPaginas; $i++): ?>
+                    <li class="page-item <?= ($i == $paginaActual) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?pagina=<?= $i; ?>"><?= $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                
+                <?php if($paginaActual < $totalPaginas): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?pagina=<?= $paginaActual + 1; ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+        
+      <?php } else { ?>
         <table>
           <tr>
             <td>
-              <p>No existe ninguna solicitud asignada a usted.  Comuníquese con su supervisor</p>
+              <p>No existe ninguna solicitud asignada a usted. Comuníquese con el administrador del sistema</p>
             </td>            
           </tr>
         </table>
-      <?php }}   ?>    
-  </div>
-  <?php include "crud/modals/modalImprimirInscripcion.php";  ?>
+      <?php } 
+      ?>    
+</div>
+  <?php include "crud/modals/modalActualizarVisita.php";  ?>
    
 </body>
 </html>
@@ -99,7 +122,7 @@ $registro=0;
 <!-- SCRIPT PARA CARGAR UN MODAL CON DATOS CONSULTADOS EN getRegSolicitudVisita.php PARA IMPRIMIR INSCRIPCION -->
 
 <script>
-let imprimirInscripcion = document.getElementById('imprimirInscripcion');
+let imprimirInscripcion = document.getElementById('actualizarVisita');
 imprimirInscripcion.addEventListener('shown.bs.modal', event => {
         let button = event.relatedTarget;
         let id = button.getAttribute('data-bs-id');
@@ -112,13 +135,13 @@ imprimirInscripcion.addEventListener('shown.bs.modal', event => {
         let inputNomComuna = imprimirInscripcion.querySelector('.modal-body #nom_comuna')
         let inputNomPropietario = imprimirInscripcion.querySelector('.modal-body #nom_propietario_inscr')
         let inputDocPropietario = imprimirInscripcion.querySelector('.modal-body #doc_propietario_inscr')
-        let inputNomSolicitante = imprimirInscripcion.querySelector('.modal-body #nom_solicitante')
+        let inputFechaVisita = imprimirInscripcion.querySelector('.modal-body #fecha_visita')
         let inputNomClase = imprimirInscripcion.querySelector('.modal-body #nom_clase')
         let inputObservacion = imprimirInscripcion.querySelector('.modal-body #observacion')
                 
         let url = "crud/getRegSolicitudVisita.php";
         let formData = new FormData();
-        formData.append('id', id  );
+        formData.append('id', id);
 
         fetch(url, {
             method: "POST",
@@ -135,7 +158,7 @@ imprimirInscripcion.addEventListener('shown.bs.modal', event => {
             inputNomComuna.value = data.nom_comuna;
             inputNomPropietario.value = data.nom_propietario+" "+data.ape_propietario;
             inputDocPropietario.value = data.doc;
-            inputNomSolicitante.value = data.nom_propietario+" "+data.ape_propietario;
+            inputFechaVisita.value = data.fecha_visita ? data.fecha_visita : ''; // Si no hay fecha de visita, dejar vacío
             inputNomClase.value = data.nom_clase; 
             inputObservacion.value = data.observacion; 
 

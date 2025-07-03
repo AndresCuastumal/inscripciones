@@ -33,9 +33,8 @@ if($_SESSION){
             $sql_actualizar->bindValue(':id_usr_update', $idUsuario);
 
             if ($sql_actualizar->execute()) {                
-                header('Content-Type: text/html');
-                echo "<script>alert('Se realizó la actualización de datos del represetante legal exitosamente'); window.location.href='../index_1.php';</script>";
-                exit(); // Detén la ejecución después del redireccionamiento
+                $mensaje = 'El propietario fue actualizado satisfactoriamente.';
+                require_once "alertas/alerta.php";
             }
             
         } catch (PDOException $e) {

@@ -162,6 +162,7 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
         let inputSujetoEditEstablecimiento = editEstablecimiento.querySelector('.modal-body #sujeto_editEstablecimiento')
         let inputClaseEditEstablecimiento = editEstablecimiento.querySelector('.modal-body #clase_editEstablecimiento')
         let inputNomBarrio = editEstablecimiento.querySelector('.modal-body #id_barrio_vereda')
+        let inputIdBarrioActual= editEstablecimiento.querySelector('.modal-body #id_barrio_vereda_actual');
         let inputIdPropietario = editEstablecimiento.querySelector('.modal-body #id_propietario')
         let inputDocPropietario = editEstablecimiento.querySelector('.modal-body #doc_propietario')
         let inputNomPropietario = editEstablecimiento.querySelector('.modal-body #nom_propietario')
@@ -188,6 +189,7 @@ let editEstablecimiento = document.getElementById('editEstablecimiento');
             inputMailEstablecimiento.value = data.correo_establecimiento;
             inputTelEstablecimiento.value = data.tel_establecimiento;
             inputNomBarrio.value = data.id_barrio_vereda;
+            inputIdBarrioActual.value = data.id_barrio_vereda; // Guardar el id del barrio actual para compararlo después
             
 
             // Cargar el select de sujeto con el id y nombre
@@ -297,11 +299,11 @@ document.querySelectorAll('.btnSolicitarVisita').forEach(btn => {
         }).then(res => res.json())
         .then(data => {
             console.log("Respuesta del backend:", data);
-            if (data.existe) {
-                let mensaje = `Este establecimiento ya tiene una solicitud registrada. Fue realizada el día ${data.fecha}.`;
-                document.getElementById('mensajeAviso').textContent = mensaje;
-                let avisoModal = new bootstrap.Modal(document.getElementById('modalAviso'));
-                avisoModal.show();
+           if (data.existe) {
+              let mensaje = `Este establecimiento ya tiene una solicitud registrada. Fue realizada el día ${data.fecha}.`;
+    
+              // Redirigir a tu archivo de alertas
+              window.location.href = `crud/alertas/alerta_error.php?mensaje=${encodeURIComponent(mensaje)}`;
             } else {
                 // Setear el ID al modal para usarlo en shown.bs.modal
                 let modalElement = document.getElementById('solicitarVisita');

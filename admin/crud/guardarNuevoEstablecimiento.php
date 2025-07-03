@@ -57,33 +57,10 @@ if($_SESSION){
             $sql_guardar->bindValue(':correo_establecimiento', $correo_establecimiento);
             $sql_guardar->bindValue(':tel_establecimiento', $tel_establecimiento);
             
-            $sql_guardar->bindValue(':id_usr_registro', $idUsuario);
-            //$sql_guardar->bindValue(':id_comuna', $id_comuna['id_comuna']);
-            //$sql_guardar->bindValue(':id_sujeto', $id_sujeto);
-            
-
+            $sql_guardar->bindValue(':id_usr_registro', $idUsuario);    
             if ($sql_guardar->execute()) {
-                //$last_id = $conn2->lastInsertId(); // Obtiene el ID del último registro insertado
-                echo "<!DOCTYPE html>
-                <html lang='es'>
-                <head>
-                    <meta charset='UTF-8'>
-                    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                    <script src='../../config/js/bootstrap.min.js'></script>
-                </head>
-                <body>
-                    <script>
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Guardado',
-                            text: 'El establecimiento fue registrado exitosamente.'
-                        }).then(() => {
-                            window.location.href = '../index.php';
-                        });
-                    </script>
-                </body>
-                </html>";
-                exit();
+                $mensaje = 'El establecimiento fue registrado exitosamente.';
+                require_once "alertas/alerta.php";
             } else {
                 echo json_encode(['success' => false, 'message' => 'Error al guardar en la base de datos.']);
             }

@@ -5,9 +5,31 @@ ob_start();
 if ($_SESSION) {
     require '../../config/conexion.php';
     header('Content-Type: application/json');
-    $fecha_actual = date('Y-m-d H:i:s');
+    
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if(isset($_POST['fecha_visita'])){
+        $fecha_visita = $_POST['fecha_visita'];
+        $visitado = $_POST['visitado'] ?? null; // Asegúrate de que este campo exista en tu formulario
+        
+        $sql = "UPDATE serviciosivc.solicitud 
+                SET fecha_visita = :fecha_visita, 
+                    visitado = :visitado 
+                WHERE id_establecimiento = :id";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':fecha_visita', $fecha_visita, PDO::PARAM_STR);
+        $stmt->bindParam(':visitado', $visitado, PDO::PARAM_STR); // o PDO::PARAM_INT según tu tipo de dato
+        $stmt->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
+       //$stmt->execute();
+
+        // Asegúrate que no hay nada antes de este código (incluyendo espacios en blanco o saltos de línea)
+        if ($stmt->execute()) {
+            $mensaje = 'El estado de visita fue actualizado satisfactoriamente.';
+            require_once "alertas/alerta.php";
+        }
+    }
+
+    else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $idUsuario =        $_SESSION['id_usuario'];
         $id =               $_POST['id'];
         $nit =              $_POST['nit'] . " - " . $_POST['dv'];
@@ -39,7 +61,8 @@ if ($_SESSION) {
             if (!$registroTecnico['id_usuario']) {
                 $registroTecnico['id_usuario'] = "0";
             }
-        } else {
+        } 
+        else {
             // Si no hay registro, asigna un valor por defecto
             $registroTecnico = ['id_usuario' => "0"];
         }
@@ -49,21 +72,11 @@ if ($_SESSION) {
                                         WHERE YEAR(fecha_solicitud) = YEAR(CURRENT_DATE);");
         $sql_consultar->execute();
         $registro = $sql_consultar->fetch(PDO::FETCH_ASSOC);        
-        $no_solicitud = date('Y').$registro['total_registros']+1;
+        $no_solicitud = date('Y').$registro['total_registros']+1;        
         
-        // Verificar si ya existe una solicitud para el establecimiento
-        //$sql_consultarEstablecimiento = $conn2->prepare("SELECT id, fecha_solicitud FROM solicitud WHERE id_establecimiento = :id_establecimiento");
-        //$sql_consultarEstablecimiento->bindParam(':id_establecimiento', $id);
-        //$sql_consultarEstablecimiento->execute();
-        //$registro = $sql_consultarEstablecimiento->fetch(PDO::FETCH_ASSOC);
-
-        //if ($registro) {
-            // Si ya existe, enviar respuesta JSON
-            //echo json_encode(['exists' => true, 'fecha_solicitud' => $registro['fecha_solicitud']]);
-            
-        //} else {
             try {
                 // Insertar nueva solicitud
+                $fecha_actual = date('Y-m-d H:i:s');
                 $sql_guardar = $conn2->prepare("INSERT INTO solicitud(id_establecimiento, id_usuario_registra, id_usuario_actualiza, no_solicitud, fecha_solicitud, tipo_solicitud, nom_solicitante, observacion, visitado,  id_usr_tecnico) 
                 VALUES (:id_establecimiento, :id_usuario, :id_usuario, :no_solicitud, :fecha_solicitud, :tipo_solicitud, :nom_solicitante, :observacion,'No visitado', :id_usr_tecnico)");
 
@@ -75,10 +88,7 @@ if ($_SESSION) {
                 $sql_guardar->bindValue(':nom_solicitante', $nom_solicitante);
                 $sql_guardar->bindValue(':observacion', $observacion);
                 $sql_guardar->bindValue(':id_usr_tecnico', $registroTecnico['id_usuario'], PDO::PARAM_INT);
-
-                $sql_guardar->execute();
-
-                $fecha_solicitud = $fecha_actual;
+                $sql_guardar->execute();                
             } catch (PDOException $e) {
                 echo json_encode(['success' => false, 'message' => 'Error de conexión: ' . $e->getMessage()]);
                 exit();
@@ -189,6 +199,3 @@ if ($_SESSION) {
     $dompdf->stream('archivo_.pdf',array('Attachment'=>false));
     
 ?>
-
-
-

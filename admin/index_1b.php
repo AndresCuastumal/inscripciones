@@ -1,143 +1,190 @@
 <?php
 include("cabecera.php");
-$accion=(isset($_POST['accion']))?$_POST['accion']:"";
-$option=(isset($_POST['opciones']))?$_POST['opciones']:"";
-$registro=0;
+// Variables iniciales
+$accion = (isset($_POST['accion'])) ? $_POST['accion'] : "";
+$busqueda = (isset($_POST['busqueda'])) ? trim($_POST['busqueda']) : "";
+$registrosPorPagina = 10;
+
+// Configuración de paginación
+$paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$paginaActual = max(1, $paginaActual);
+
+// Fecha para consulta inicial
 $fecha_busqueda = new DateTime();
-$fecha_busqueda->modify('-10 days');
-$fecha_formateada = $fecha_busqueda->format('Y-m-d'); 
+$fecha_busqueda->modify('-90 days');
+$fecha_formateada = $fecha_busqueda->format('Y-m-d');
 
-$sentenciaSQL2=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, 
-                              s.fecha_solicitud,s.id as id_solicitud,
-                              p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario 
-                              FROM solicitud s 
-                              JOIN establecimiento e ON e.id = s.id_establecimiento
-                              JOIN propietario p ON e.id_propietario = p.id                                      
-                              WHERE s.fecha_solicitud > :fecha_busqueda
-                              ORDER BY s.id DESC");    
-$sentenciaSQL2->bindParam(':fecha_busqueda',$fecha_formateada);
-$sentenciaSQL2->execute();
+// Determinar si estamos en modo búsqueda
+$modoBusqueda = (!empty($busqueda) || (isset($_POST['accion']) && $_POST['accion'] == 'Consultar'));
 
-switch($accion){
-  
-  case'Consultar':
-    $bandera=1;
-    $busqueda=(isset($_POST['busqueda']))?$_POST['busqueda']:"";
-    $busqueda='%'.$busqueda.'%';    
-    $sentenciaSQL=$conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, 
-                                    s.fecha_solicitud,s.id as id_solicitud,
-                                    p.nom_propietario, p.ape_propietario,  p.doc, p.id as id_propietario 
-                                    FROM solicitud s 
-                                    JOIN establecimiento e ON e.id = s.id_establecimiento
-                                    JOIN propietario p ON e.id_propietario = p.id                                      
-                                    WHERE e.nit LIKE :busqueda
-                                    OR p.doc LIKE :busqueda
-                                    OR e.nom_comercial LIKE :busqueda
-                                    OR CONCAT(p.nom_propietario,' ',p.ape_propietario) LIKE :busqueda 
-                                    ORDER BY s.id DESC");    
-    $sentenciaSQL->bindParam(':busqueda',$busqueda);
-    $sentenciaSQL->execute();
-
-    //$registro=$sentenciaSQL->fetch(PDO::FETCH_LAZY); //MÉTODO QUE PERMITE CARGAR UNO A UNO LOS CAMPOS DE UN REGISTRO SEGÚN LA CONSULTA HECHA    
-    break;
+// Consulta base sin búsqueda
+if(!$modoBusqueda) {
+    // Primero contar el total de registros
+    $countSQL = $conn2->prepare("SELECT COUNT(*) as total 
+                               FROM solicitud s 
+                               JOIN establecimiento e ON e.id = s.id_establecimiento
+                               JOIN propietario p ON e.id_propietario = p.id                                      
+                               WHERE s.fecha_solicitud > :fecha_busqueda");
+    $countSQL->bindParam(':fecha_busqueda', $fecha_formateada);
+    $countSQL->execute();
+    $totalRegistros = $countSQL->fetchColumn();
+    
+    // Consulta con paginación
+    $inicio = ($paginaActual - 1) * $registrosPorPagina;
+    $sentenciaSQL = $conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, 
+                                   s.fecha_solicitud, s.id as id_solicitud,
+                                   p.nom_propietario, p.ape_propietario, p.doc, p.id as id_propietario 
+                                   FROM solicitud s 
+                                   JOIN establecimiento e ON e.id = s.id_establecimiento
+                                   JOIN propietario p ON e.id_propietario = p.id                                      
+                                   WHERE s.fecha_solicitud > :fecha_busqueda
+                                   ORDER BY s.id DESC
+                                   LIMIT :inicio, :registrosPorPagina");
+    $sentenciaSQL->bindParam(':fecha_busqueda', $fecha_formateada);
+    $sentenciaSQL->bindParam(':inicio', $inicio, PDO::PARAM_INT);
+    $sentenciaSQL->bindParam(':registrosPorPagina', $registrosPorPagina, PDO::PARAM_INT);
+} 
+// Consulta con búsqueda
+else {
+    $busquedaLike = '%'.$busqueda.'%';
+    
+    // Primero contar el total de registros con filtro
+    $countSQL = $conn2->prepare("SELECT COUNT(*) as total 
+                               FROM solicitud s 
+                               JOIN establecimiento e ON e.id = s.id_establecimiento
+                               JOIN propietario p ON e.id_propietario = p.id                                      
+                               WHERE e.nit LIKE :busqueda
+                               OR p.doc LIKE :busqueda
+                               OR e.nom_comercial LIKE :busqueda
+                               OR CONCAT(p.nom_propietario,' ',p.ape_propietario) LIKE :busqueda");
+    $countSQL->bindParam(':busqueda', $busquedaLike);
+    $countSQL->execute();
+    $totalRegistros = $countSQL->fetchColumn();
+    
+    // Consulta con paginación y filtro
+    $inicio = ($paginaActual - 1) * $registrosPorPagina;
+    $sentenciaSQL = $conn2->prepare("SELECT e.id, e.nom_comercial, e.nit, 
+                                   s.fecha_solicitud, s.id as id_solicitud,
+                                   p.nom_propietario, p.ape_propietario, p.doc, p.id as id_propietario 
+                                   FROM solicitud s 
+                                   JOIN establecimiento e ON e.id = s.id_establecimiento
+                                   JOIN propietario p ON e.id_propietario = p.id                                      
+                                   WHERE e.nit LIKE :busqueda
+                                   OR p.doc LIKE :busqueda
+                                   OR e.nom_comercial LIKE :busqueda
+                                   OR CONCAT(p.nom_propietario,' ',p.ape_propietario) LIKE :busqueda
+                                   ORDER BY s.id DESC
+                                   LIMIT :inicio, :registrosPorPagina");
+    $sentenciaSQL->bindParam(':busqueda', $busquedaLike);
+    $sentenciaSQL->bindParam(':inicio', $inicio, PDO::PARAM_INT);
+    $sentenciaSQL->bindParam(':registrosPorPagina', $registrosPorPagina, PDO::PARAM_INT);
 }
+
+$sentenciaSQL->execute();
+
+// Calcular total de páginas
+$totalPaginas = ceil($totalRegistros / $registrosPorPagina);
 ?>
 <body>
-  <div class="container-fluid p-5 bg-primary text-white text-center">
-    <div class="row">
-      <div class="col-sm-6 text-right" >
-        <h2>Sistema de Registro de Establecimientos</h2>
-        <p>Secretaría de Salud Municipal - Salud Ambiental</p>
-      </div>
-      <div class="col-sm-6">
-        <img src="img/inscripciones_largoHorizontal.png" width= "450px">
-      </div>
-    </div>
-  </div>
-    
+  <!-- Encabezado y otros elementos HTML permanecen iguales -->
+  
   <div class="container mt-5">
     <div class="row">
       <div class="bg-light text-info ">
         <h3>Listar solicitudes de concepto sanitario</h3>
-        <p class="text-justify" >En este módulo se listan las solicitudes de la última semana registradas en el sistema.  
-        </p>      
+        <p class="text-justify">En este módulo se listan las solicitudes de los últimos 90 días en el sistema.</p>      
       </div>    
     </div>
     <div>
     <br></br>  
-      <form method ="POST">
+      <form method="POST" action="">
         <div class="mb-3" id="input-container">
-        <label for="doc" id="dynamicLabel" >Si necesita consultar una solicitud en específico, escriba el nombre del establecimiento o NIT.</label>
-          <input type="text" class="form-control" name = "busqueda" id="busqueda" placeholder="" value="" required>
+          <label for="busqueda" id="dynamicLabel">Si necesita consultar una solicitud en específico, escriba el nombre del establecimiento o NIT.</label>
+          <input type="text" class="form-control" name="busqueda" id="busqueda" placeholder="" value="<?= htmlspecialchars($busqueda) ?>" required>
         </div>        
-          <div class="mb-3">
-              <input type="submit" name="accion" value="Consultar" class="btn btn-sm btn-success btn-block"/>
-          </div>
+        <div>
+          <button type="submit" name="accion" value="Consultar" class="btn btn-sm btn-success btn-block">Buscar</button>
+          <?php if($modoBusqueda): ?>
+            <a href="?" class="btn btn-sm btn-secondary">Limpiar búsqueda</a>
+          <?php endif; ?>
+        </div>
       </form> 
     </div>
-  </div>
+  </div>  
   <div class="container mt-5 card text-center"> 
-    <?php ?>
-        <table class="table">
-          <thead>
-            <tr class="text-secondary">
-            <th colspan="6" class="text-secondary">DATOS GENERALES</th>
-            <th class="border-end text-secondary">ACCIONES PARA ESTABLECIMIENTO</th>
-            </tr>
-            <tr>
-              <th class="text-primary">ID</th><th class="text-primary">Nombre establecimiento</th> <th class="text-primary">NIT establecimiento</th> <th class="text-primary">Fecha de solicitud</th>
-              <th class="text-primary">Nombre Propietario</th> <th class="text-primary">Doc Propietario</th>              
-              <th class="border-end text-primary">Imprimir solicitud de visita</th>              
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              if(isset($bandera)){
-                while($registro=$sentenciaSQL->fetch(PDO::FETCH_ASSOC)){
-            ?>
-            <tr>
-              <td><?= $registro['id_solicitud'];?></td><td><?= $registro['nom_comercial'];?></td><td><?= $registro['nit']; ?></td><td><?= date('d-m-Y', strtotime($registro['fecha_solicitud'])); ?>
-              <td><?= $registro['nom_propietario']." ".$registro['ape_propietario'];?></td><td><?= $registro['doc']; ?></td>
-              <td class="border-end">                
-                <a href="../admin/crud/imprimirSolicitudVisita.php?id=<?= $registro['id_solicitud']; ?>" class="btn btn-sm btn-secondary">
-                <i class="fa-solid fa-print"></i></a>                
-              </td>             
-            </tr>            
-            <?php } ?>            
-          </tbody>
-        </table>
-      <?php } 
-      else{ ?>        
+    <table class="table">
+      <thead>
+        <tr class="text-secondary">
+          <th colspan="6" class="text-secondary">DATOS GENERALES</th>
+          <th class="border-end text-secondary">ACCIONES PARA ESTABLECIMIENTO</th>
+        </tr>
+        <tr>
+          <th class="text-primary">ID</th>
+          <th class="text-primary">Nombre establecimiento</th>
+          <th class="text-primary">NIT establecimiento</th>
+          <th class="text-primary">Fecha de solicitud</th>
+          <th class="text-primary">Nombre Propietario</th>
+          <th class="text-primary">Doc Propietario</th>              
+          <th class="border-end text-primary">Imprimir solicitud de visita</th>              
+        </tr>
+      </thead>
+      <tbody>
+        <?php while($registro = $sentenciaSQL->fetch(PDO::FETCH_ASSOC)): ?>
           <tr>
-            <td>
-            <?php
-              while($registro2=$sentenciaSQL2->fetch(PDO::FETCH_ASSOC)){
-            ?>
-            <tr>
-              <td><?= $registro2['id_solicitud'];?></td><td><?= $registro2['nom_comercial'];?></td><td><?= $registro2['nit']; ?></td><td><?= date('d-m-Y', strtotime($registro2['fecha_solicitud'])); ?>
-              <td><?= $registro2['nom_propietario']." ".$registro2['ape_propietario'];?></td><td><?= $registro2['doc']; ?></td>
-              <td class = "border-end">                
-                <a href="../admin/crud/imprimirSolicitudVisita.php?id=<?= $registro2['id_solicitud']; ?>" class="btn btn-sm btn-secondary">
-                <i class="fa-solid fa-print"></i></a>                
-              </td>             
-            </tr>            
-            <?php } ?>            
-          </tbody>
-        </table>            
-      <?php } ?>    
+            <td><?= htmlspecialchars($registro['id_solicitud']) ?></td>
+            <td><?= htmlspecialchars($registro['nom_comercial']) ?></td>
+            <td><?= htmlspecialchars($registro['nit']) ?></td>
+            <td><?= date('d-m-Y', strtotime($registro['fecha_solicitud'])) ?></td>
+            <td><?= htmlspecialchars($registro['nom_propietario']." ".$registro['ape_propietario']) ?></td>
+            <td><?= htmlspecialchars($registro['doc']) ?></td>
+            <td class="border-end">                
+              <a href="../admin/crud/imprimirSolicitudVisita.php?id=<?= $registro['id_solicitud'] ?>" class="btn btn-sm btn-secondary">
+                <i class="fa-solid fa-print"></i>
+              </a>                
+            </td>             
+          </tr>            
+        <?php endwhile; ?>            
+      </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    <?php if($totalPaginas > 1): ?>
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <?php if($paginaActual > 1): ?>
+            <li class="page-item">
+              <a class="page-link" href="?pagina=<?= $paginaActual - 1 ?><?= !empty($busqueda) ? '&busqueda='.urlencode($busqueda) : '' ?>" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          <?php endif; ?>
+          
+          <?php for($i = 1; $i <= $totalPaginas; $i++): ?>
+            <li class="page-item <?= ($i == $paginaActual) ? 'active' : '' ?>">
+              <a class="page-link" href="?pagina=<?= $i ?><?= !empty($busqueda) ? '&busqueda='.urlencode($busqueda) : '' ?>"><?= $i ?></a>
+            </li>
+          <?php endfor; ?>
+          
+          <?php if($paginaActual < $totalPaginas): ?>
+            <li class="page-item">
+              <a class="page-link" href="?pagina=<?= $paginaActual + 1 ?><?= !empty($busqueda) ? '&busqueda='.urlencode($busqueda) : '' ?>" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          <?php endif; ?>
+        </ul>
+      </nav>
+    <?php endif; ?>
   </div>  
 
-<!-- SCRIPT PARA MOSTRAR UN MENSAJE INFORMATIVO EN EL ÍCONO "i" -->
-
-<script>
+  <script>
     document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         tooltipTriggerList.forEach(function (tooltipTriggerEl) {
             new bootstrap.Tooltip(tooltipTriggerEl)
         })
     });
-</script>
-
+  </script>
 
 <?php
 include("pie.php");

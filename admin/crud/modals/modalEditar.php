@@ -8,6 +8,8 @@
         <div class="modal-body">
             <form id="editEstablecimientoForm" action ="crud/guardarUpdateRegEstablecimiento.php" method="post">
             <input type="hidden" name="id" id="id">
+            <input type="hidden" name="id_barrio_vereda_actual" id="id_barrio_vereda_actual">
+            <input type="hidden" name="id_sujeto_actual" id="id_sujeto_actual">
             
             <div class="mb-2">
             <table class="table">                

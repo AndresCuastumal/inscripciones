@@ -7,7 +7,7 @@ if($_SESSION){
         die(json_encode(['error' => 'Fallo la conexión a la base de datos.']));
     }
 
-    if (isset($_POST['id'])) {
+    if (isset($_POST['id'])) {        
         try {
             $id = $_POST['id'];
 
@@ -30,10 +30,8 @@ if($_SESSION){
             $stmt->bindParam(':id', $id, PDO::PARAM_INT); //+++ EL id ES EL ID DE TABLA ESTABLECIMIENTO +++
             $stmt->execute();
             $regSolicitudVisita = $stmt->fetch(PDO::FETCH_ASSOC);
-            
             echo json_encode($regSolicitudVisita, JSON_UNESCAPED_UNICODE);
-           
-        }   catch (Exception $e) {
+           }   catch (Exception $e) {
             echo json_encode(['error' => 'Error en el servidor: ' . $e->getMessage()]);
         }
         
